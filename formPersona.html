@@ -104,6 +104,32 @@
         <div class="invalid-feedback">El espacio Fecha de Nacimiento es obligatorio.</div>
       </div>
 
+      <div class="col-md-6">
+        <label for="oficina">Oficina</label>
+        <select id="oficina" class="form-control" required>
+          <option value="">Seleccione una oficina</option>
+        </select>
+        <div class="invalid-feedback">
+          Debe seleccionar una oficina.
+        </div>
+      </div>
+
+      <div class="col-md-6">
+        <label for="telefono">Telefono</label>
+        <input id="telefono" class="form-control" required>
+        <div class="invalid-feedback">
+          El campo Telefono es obligatorio.
+        </div>
+      </div>
+
+      <div class="col-md-6">
+        <label for="cargo">Cargo</label>
+        <input id="cargo" class="form-control" required>
+        <div class="invalid-feedback">
+          El campo Cargo es obligatorio.
+        </div>
+      </div>
+
       <div class="col-md-12 text-end mt-4">
       <button id="guardar" type= "submit" class="btn" > <i class="bi bi-floppy-fill"></i> Guardar </button>
       <button id="cancelar" type= "button" class="btn" onclick="window.location.href='indexPersona.html'">

@@ -29,6 +29,10 @@
             }
         });
     </script>
+
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDQlKcIqKYi1J4AXQhmXgFwT4CLgj-eNh4"></script>
+
+
 </head>
 <body>
 <nav class="navbar navbar-expand-lg navbar-custom">
@@ -80,6 +84,14 @@
                 <label for="ubicacion">Ubicación</label>
                 <input id="ubicacion" class="form-control" required/>
                 <div class="invalid-feedback">El espacio Ubicación es obligatorio.</div>
+            </div>
+
+            <div class="col-md-6">
+                <label for="limitePersonas">Límite de personas</label>
+                <input type="number" id="limitePersonas" class="form-control" required min="1">
+                <div class="invalid-feedback">
+                    Debe ingresar un número válido.
+                </div>
             </div>
 
             <div class="col-md-12 text-end mt-4">

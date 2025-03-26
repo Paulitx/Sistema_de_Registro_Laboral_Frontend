@@ -7,6 +7,7 @@ function cargarPersonas() {
         <td colspan="6" class="text-white" style="background-color: #d895c6">No hay datos disponibles.</td>
         </tr>`;
     }
+
     personas.forEach((persona, index) => {
         let fila = `<tr>
                     <td>${persona.id}</td>
@@ -14,6 +15,9 @@ function cargarPersonas() {
                     <td>${persona.email}</td>
                     <td>${persona.direccion}</td>
                     <td>${persona.fechaNacimiento}</td>
+                    <td>${persona.oficina.nombre}</td>
+                    <td>${persona.telefono}</td>
+                    <td>${persona.cargo}</td>
                     <td>
                         <button onclick="editarPersona(${index})" class="btn btn-editar"> 
                             <i class="bi bi-pencil-square"></i> Editar</button>
@@ -23,6 +27,7 @@ function cargarPersonas() {
                 </tr>`;
         tbody.innerHTML += fila;
     });
+
 }
 
 function confirmarEliminacion(index) {
@@ -45,40 +50,59 @@ function editarPersona(index) {
 }
 
 function guardarPersona(event) {
+
     event.preventDefault();
-
     let form = event.target;
-
-    if(!form.checkValidity()){
+    if (!form.checkValidity()) {
         event.stopPropagation();
         form.classList.add('was-validated');
         return;
     }
+
+    let oficinas = JSON.parse(localStorage.getItem("oficinas")) || [];
+    let personasGuardada = JSON.parse(localStorage.getItem("personas")) || [];
 
     let id = document.getElementById("id").value;
     let nombre = document.getElementById("nombre").value;
     let email = document.getElementById("email").value;
     let direccion = document.getElementById("direccion").value;
     let fechaNacimiento = document.getElementById("fechaNacimiento").value;
+    let telefono = document.getElementById("telefono").value;
+    let cargo = document.getElementById("cargo").value;
+    let oficinaSeleccionada = document.getElementById("oficina").value;
 
-    if (!id || !nombre || !email || !direccion || !fechaNacimiento) {
+
+    //obtener el objeto oficina completo usando el índice seleccionado
+    let oficina = oficinas[oficinaSeleccionada];
+
+    if (!id || !nombre || !email || !direccion || !fechaNacimiento || !oficina || !telefono || !cargo) {
         alert("Todos los campos son obligatorios");
         return;
     }
-    else {
-        let persona = { id, nombre, email, direccion, fechaNacimiento };
-        let personas = JSON.parse(localStorage.getItem("personas")) || [];
 
-        let index = localStorage.getItem("editIndex");
-        if (index !== null) {
-            personas[index] = persona;
-        } else {
-            personas.push(persona);
-        }
+    //contar cuántas personas estan en la misma oficina
+    let personasEnOficina = personasGuardada.filter(p => p.oficina.nombre === oficina.nombre).length;
 
-        localStorage.setItem("personas", JSON.stringify(personas));
-        window.location.href = "indexPersona.html";
+    if (personasEnOficina >= oficina.limitePersonas) {
+        alert(`No se puede asignar más personas a la oficina ${oficina.nombre}. Límite alcanzado.`);
+        return;
     }
+
+    //guardar persona luego de validar
+    let persona = { id, nombre, email, direccion, fechaNacimiento, oficina, telefono, cargo };
+    let personas = JSON.parse(localStorage.getItem("personas")) || [];
+
+    let index = localStorage.getItem("editIndex");
+    if (index !== null) {
+        personas[index] = persona;
+    } else {
+        personas.push(persona);
+    }
+
+    localStorage.setItem("personas", JSON.stringify(personas));
+    window.location.href = "indexPersona.html";
+
+
 }
 
 // Example starter JavaScript for disabling form submissions if there are invalid fields
@@ -101,3 +125,29 @@ function guardarPersona(event) {
             }, false)
         })
 })()
+
+document.addEventListener("DOMContentLoaded", function () {
+    let oficinas = JSON.parse(localStorage.getItem("oficinas")) || [];
+    let selectOficina = document.getElementById("oficina");
+
+    oficinas.forEach((oficina, index) => {
+        let option = document.createElement("option");
+        option.value = index; // Guardamos el índice de la oficina
+        option.textContent = oficina.nombre;
+        selectOficina.appendChild(option);
+    });
+});
+
+
+document.addEventListener("DOMContentLoaded", function() {
+    let personas = JSON.parse(localStorage.getItem("personas")) || [];
+    let iconoEstado = document.getElementById("icono-estado");
+    if(personas.length === 0){
+        iconoEstado.classList.remove("text-success");
+        iconoEstado.classList.add("text-danger");
+
+    }else{
+        iconoEstado.classList.remove("text-danger");
+        iconoEstado.classList.add("text-success");
+    }
+});
