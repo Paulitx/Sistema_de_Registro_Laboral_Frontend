@@ -1,0 +1,53 @@
+
+#oficinas-list .btn-editar {
+    background-color: var(--moraoOscurin1);
+    color: var(--moraoClaro);
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+#oficinas-list .btn-eliminar {
+    background-color: var(--moraoClaro1);
+    color: var(--morao);
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+#oficinas-list .btn-editar:hover    {
+    background-color: var(--moraoOscuro1);
+    border: 1px solid var(--moraoOscuro1);
+    color: var(--moraoClaro);
+}
+
+#oficinas-list .btn-eliminar:hover {
+    background-color: var(--moraoOscuro1);
+    border: 1px solid var(--moraoOscuro1);
+    color: var(--moraoClaro);
+}
+
+#tablita {
+    width: 100%;
+    border: 2px solid var(--amarillinClaro);
+    border-color: #dbd5fd;
+    border-collapse: collapse;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+#titulos {
+    background-color: var(--morao);
+    color: var(--moraoClaro);
+}
+
+#oficinas-list {
+    background-color: var(--moraoClaro);
+}
+
+button#agregar {
+    background: none;
+    color: var(--moraoOscurin1);
+}
+
+button#agregar:hover {
+    background: none;
+    color: var(--rosao);
+}

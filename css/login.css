@@ -1,0 +1,71 @@
+
+p#tOlvidoConstrasenna {
+    color: var(--moraoOscurin1);
+    text-align: end;
+
+}
+
+p#tOlvidoConstrasenna:hover {
+    color: var(--moraoClaro);
+    text-align: end;
+
+}
+
+p#tCrearCuenta {
+    color: var(--morao);
+
+}
+
+p#tCrearCuenta:hover {
+    color: var(--moraoClaro);
+
+}
+
+input#username {
+    background-color: var(--moraoOscurin);
+    display: inline-block; /* Permite aplicar borde alrededor del texto */
+    color: var(--moraoClaro);
+    border: 1px solid var(--morao);
+
+}
+
+input#password {
+    background-color: var(--moraoOscurin);
+    display: inline-block; /* Permite aplicar borde alrededor del texto */
+    color: var(--moraoClaro);
+    border: 1px solid var(--morao);
+
+}
+
+button#iniciarSesion {
+    background-color: var(--moraoFondin);
+    color: var(--moraoClaro);
+
+}
+
+button#iniciarSesion:hover {
+    background-color: var(--moraoOscuro1);
+    border: 1px solid var(--moraoOscuro1);
+    color: var(--moraoClaro);
+
+}
+
+#verPassword {
+    border-radius: 10px;
+    border: 1px var(--morao)
+
+}
+
+.border-only {
+    background: none;
+    border-color: var(--morao);
+
+}
+
+.border-only i {
+  color: var(--moraoClaro);
+}
+
+.border-only i:hover {
+    color: var(--morao);
+}

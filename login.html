@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Login</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH"
+          crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="css/login.css">
+    <link rel="stylesheet" href="css/base.css">
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+            crossorigin="anonymous"></script>
+    <script src ="js/auth.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            let index = localStorage.getItem("editIndex");
+            if(index !== null) {
+                let personas = JSON.parse(localStorage.getItem("personas")) || [];
+                let persona = personas[index];
+                document.getElementById("username").value = auth.username;
+                document.getElementById("password").value = auth.password;
+            }
+        });
+    </script>
+</head>
+
+<body>
+    <div class="container">
+        <form class="form-container needs-validation w-50 h-auto" novalidate onsubmit="login(event)">
+            <h1>Iniciar Sesión</h1>
+            <div class="row mb-2">
+
+                <div class="col-md-12">
+                    <label for="username">Usuario</label>
+                    <input id="username" class="form-control" required/>
+                    <div class="invalid-feedback">El espacio Usuario es obligatorio.</div>
+                </div>
+
+                <div class="col-md-12 mt-2">
+                    <label for="password" >Contraseña</label>
+                    <div class="input-group" id="verPassword">
+                        <input id="password" type="password" class="form-control" required />
+                        <span  class="input-group-text rounded-end border-only" onclick="mostrarPassword()">
+                            <i id="eyeIcon" class="bi bi-eye-fill"></i> </span>
+                        <div  class="invalid-feedback">El espacio Contraseña es obligatorio.</div>
+                    </div>
+
+                </div>
+                <p id="tOlvidoConstrasenna" class="pe-4" >¿Olvidaste tu contraseña?</p>
+                <div class="col-md-6 mt-2">
+                    <p id="tCrearCuenta" >Crear cuenta</p>
+                </div>
+
+                <div class="col-md-6 text-end mt-2">
+                    <button id="iniciarSesion" type= "submit" class="btn">Siguiente
+                        <i class="bi bi-arrow-right-circle"></i></button>
+                </div>
+            </div>
+        </form>
+    </div>
+<footer class="mt-4" >
+    &copy; 2025 Progra IV - Todos los derechos reservados
+</footer>
+</body>
+</html>

@@ -1,0 +1,42 @@
+
+input#nombre {
+    background-color: var(--moraoOscurin);
+    color: var(--moraoClaro);
+    border: 1px solid var(--morao);
+
+}
+
+input#ubicacion {
+    background-color: var(--moraoOscurin);
+    color: var(--moraoClaro);
+    border: 1px solid var(--morao);
+
+}
+
+button#guardar {
+    background-color: var(--moraoClaro);
+    color: var(--moraoOscurin1);
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
+
+}
+
+button#cancelar {
+    background-color: var(--moraoOscurin1);
+    color: var(--moraoClaro);
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
+
+}
+
+button#guardar:hover {
+    background-color: var(--moraoOscuro1);
+    border: 1px solid var(--moraoOscuro1);
+    color: var(--moraoClaro);
+
+}
+
+button#cancelar:hover {
+    background-color: var(--moraoOscuro1);
+    border: 1px solid var(--moraoOscuro1);
+    color: var(--moraoClaro);
+
+}

@@ -1,0 +1,113 @@
+
+:root{
+    --moraoOscuro: #100e19;
+    --moraoOscuro1: #3d3861;
+    --moraoOscurin: #2a2438;
+    --moraoOscurin1: #565273;
+    --moraoFondin: rgba(162, 157, 221, 0.34);
+    --morao1: #5452bd;
+    --morao: #9f9ada;
+    --moraoClaro1: #6e6ca8;
+    --moraoClaro: #dbd5fd;
+    --rosao: #fb7fd7;
+    --rosaoClarito: #fab4e5;
+    --naranjita: #edb39e;
+    --amarillin: #FBF3B9;
+    --amarillinClaro: #faf4ce;
+
+    --blanco: white;
+}
+
+h1 {
+    color: var(--moraoClaro);
+    /*font-family: "A little sunshine", monospace;*/
+
+}
+
+h2 {
+    color: var(--moraoClaro);
+    /*font-family: "A little sunshine", monospace;*/
+
+}
+
+label {
+    color: var(--morao);
+
+}
+
+body {
+    background-color: var(--moraoOscuro);
+
+}
+
+.navbar-custom {
+     background: linear-gradient(90deg, var(--morao), var(--rosao), var(--naranjita), var(--amarillin));
+ }
+
+footer {
+    margin-top: auto;
+    background-color: var(--moraoFondin);
+    color: var(--moraoClaro);
+    text-align: center;
+    padding: 15px 0;
+
+}
+
+.navbar-custom button {
+    background: linear-gradient( var(--morao), var(--rosao), var(--naranjita), var(--amarillin));
+    border: 2px solid var(--morao1);
+    color: var(--morao1);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+.navbar-custom button:hover {
+    background: var(--moraoOscurin1);
+    color: white;
+    border-color: var(--moraoOscurin1);
+
+}
+
+.dropdown-toggle {
+    color: var(--moraoOscurin);
+}
+
+.nav-item.dropdown:hover .dropdown-menu {
+    display: block
+}
+
+.dropdown-menu {
+    border: 1px solid var(--moraoOscurin1);
+    background-color: var(--moraoClaro);
+    color: var(--moraoOscurin1);
+
+
+}
+.dropdown-item {
+    text-align: left;
+
+}
+
+.dropdown-item:hover {
+    color: var(--rosao);
+}
+
+.container {
+    display: flex;
+    justify-content: center; /* Centra horizontalmente */
+    flex-direction: column;
+    height: 89vh; /* Hace que el contenedor ocupe toda la altura de la ventana */
+    text-align: center;
+
+}
+
+.form-container {
+    background-color: var(--moraoOscurin); /* Color de fondo del recuadro */
+    padding: 20px;
+    border-radius: 20px; /* Bordes redondeados */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3); /* Sombra suave */
+    margin: 60px auto; /* Centra horizontalmente */
+    text-align: start; /* Centra el contenido dentro del recuadro */
+    flex-direction: column; /* Coloca los elementos de forma vertical (si es un formulario, por ejemplo) */
+    display: flex;
+
+}
