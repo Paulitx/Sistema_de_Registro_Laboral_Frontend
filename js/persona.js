@@ -1,6 +1,11 @@
+let paginaActual = 1;
+const registrosPorPagina = 5;
+
 function cargarPersonas() {
     let personas = JSON.parse(localStorage.getItem("personas")) || [];
     let tbody = document.getElementById("personas-list");
+    let totalPaginas = Math.ceil(personas.length / registrosPorPagina);
+
     tbody.innerHTML = "";
     if(personas.length === 0){
         tbody.innerHTML = `<tr>
@@ -8,7 +13,9 @@ function cargarPersonas() {
         </tr>`;
     }
 
-    personas.forEach((persona, index) => {
+
+    let personaPagina = personas.slice((paginaActual - 1) * registrosPorPagina, paginaActual * registrosPorPagina);
+    personaPagina.forEach((persona, index) => {
         let fila = `<tr>
                     <td>${persona.id}</td>
                     <td>${persona.nombre}</td>
@@ -27,8 +34,54 @@ function cargarPersonas() {
                 </tr>`;
         tbody.innerHTML += fila;
     });
-
+    mostrarPaginacion(totalPaginas);
 }
+
+// Mostrar los controles de paginación
+function mostrarPaginacion(totalPaginas) {
+    let paginacionDiv = document.getElementById("paginacion");
+    paginacionDiv.innerHTML = "";
+
+    // Botón "Anterior"
+    if (paginaActual > 1) {
+        let btnAnterior = document.createElement("button");
+        btnAnterior.textContent = "Anterior";
+        btnAnterior.classList.add("btn", "btn-secondary");
+        btnAnterior.onclick = function() {
+            paginaActual--;
+            cargarPersonas();
+        };
+        paginacionDiv.appendChild(btnAnterior);
+    }
+
+    // Mostrar números de página
+    for (let i = 1; i <= totalPaginas; i++) {
+        let btnPagina = document.createElement("button");
+        btnPagina.textContent = i;
+        btnPagina.classList.add("btn", "btn-light", "mx-1");
+        if (i === paginaActual) {
+            btnPagina.disabled = true;
+        }
+        btnPagina.onclick = function() {
+            paginaActual = i;
+            cargarPersonas();
+        };
+        paginacionDiv.appendChild(btnPagina);
+    }
+
+    // Botón "Siguiente"
+    if (paginaActual < totalPaginas) {
+        let btnSiguiente = document.createElement("button");
+        btnSiguiente.textContent = "Siguiente";
+        btnSiguiente.classList.add("btn", "btn-secondary");
+        btnSiguiente.onclick = function() {
+            paginaActual++;
+            cargarPersonas();
+        };
+        paginacionDiv.appendChild(btnSiguiente);
+    }
+}
+
 
 function confirmarEliminacion(index) {
     const confirmacion = confirm("¿Desea eliminar esta persona?");

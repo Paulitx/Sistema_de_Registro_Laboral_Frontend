@@ -1,32 +1,31 @@
 let paginaActual = 1;
 const registrosPorPagina = 5;
 
-function cargarOficinas() {
-    let oficinas = JSON.parse(localStorage.getItem("oficinas")) || [];
-    let personas = JSON.parse(localStorage.getItem("personas")) || [];
-    let tbody = document.getElementById("oficinas-list");
-    let totalPaginas = Math.ceil(oficinas.length / registrosPorPagina);
+function cargarRegistros() {
+    let registros = JSON.parse(localStorage.getItem("registros")) || [];
+    let tbody = document.getElementById("registros-list");
+    let totalPaginas = Math.ceil(registros.length / registrosPorPagina);
 
     tbody.innerHTML = "";
-    if (oficinas.length === 0) {
+    if (registros.length === 0) {
         tbody.innerHTML = `<tr>
             <td colspan="3" class="text-white" style="background-color: #d895c6">No hay datos disponibles.</td>
         </tr>`;
+        return;
     }
 
-    let oficinasPagina = oficinas.slice((paginaActual - 1) * registrosPorPagina, paginaActual * registrosPorPagina);
-    oficinasPagina.forEach((oficina, index) => {
+    // Determinar los registros a mostrar según la página actual
+    let registrosPagina = registros.slice((paginaActual - 1) * registrosPorPagina, paginaActual * registrosPorPagina);
 
-        let personasEnOficina = personas.filter(p => p.oficina.nombre === oficina.nombre).length;
-
-        // Calcular el número de personas disponibles
-        let personasDisponibles = oficina.limitePersonas - personasEnOficina;
+    // Agregar los registros de la página actual al tbody
+    registrosPagina.forEach((registro, index) => {
+        let personaNombre = registro.persona ? registro.persona.nombre : "Desconocido";
         let fila = `<tr>
-                    <td>${oficina.nombre}</td>
-                    <td>${oficina.ubicacion}</td>
-                    <td>${personasDisponibles}</td>
+                    <td>${personaNombre}</td>
+                    <td>${registro.tipoRegistro}</td>
+                    <td>${registro.fechaHora}</td>
                     <td>
-                        <button onclick="editarOficina(${index})" class="btn btn-editar"> 
+                        <button onclick="editarRegistro(${index})" class="btn btn-editar"> 
                             <i class="bi bi-pencil-square"></i> Editar</button>
                         <button onclick="confirmarEliminacion(${index})" class="btn btn-eliminar"> 
                             <i class="bi bi-trash-fill"></i> Eliminar</button>
@@ -34,6 +33,8 @@ function cargarOficinas() {
                 </tr>`;
         tbody.innerHTML += fila;
     });
+
+    // Mostrar los controles de paginación
     mostrarPaginacion(totalPaginas);
 }
 
@@ -49,7 +50,7 @@ function mostrarPaginacion(totalPaginas) {
         btnAnterior.classList.add("btn", "btn-secondary");
         btnAnterior.onclick = function() {
             paginaActual--;
-            cargarOficinas();
+            cargarRegistros();
         };
         paginacionDiv.appendChild(btnAnterior);
     }
@@ -64,7 +65,7 @@ function mostrarPaginacion(totalPaginas) {
         }
         btnPagina.onclick = function() {
             paginaActual = i;
-            cargarOficinas();
+            cargarRegistros();
         };
         paginacionDiv.appendChild(btnPagina);
     }
@@ -76,62 +77,65 @@ function mostrarPaginacion(totalPaginas) {
         btnSiguiente.classList.add("btn", "btn-secondary");
         btnSiguiente.onclick = function() {
             paginaActual++;
-            cargarOficinas();
+            cargarRegistros();
         };
         paginacionDiv.appendChild(btnSiguiente);
     }
 }
 
+
 function confirmarEliminacion(index) {
-    const confirmacion = confirm("¿Desea eliminar esta oficina?");
+    const confirmacion = confirm("¿Desea eliminar este registro?");
     if (confirmacion) {
-        eliminarOficina(index);
+        eliminarRegistro(index);
     }
 }
 
-function eliminarOficina(index) {
-    let oficinas = JSON.parse(localStorage.getItem("oficinas")) || [];
-    oficinas.splice(index, 1);
-    localStorage.setItem("oficinas", JSON.stringify(oficinas));
-    cargarOficinas();
+function eliminarRegistro(index) {
+    let registros = JSON.parse(localStorage.getItem("registros")) || [];
+    registros.splice(index, 1);
+    localStorage.setItem("registros", JSON.stringify(registros));
+    cargarRegistros();
 }
 
-function editarOficina(index) {
+function editarRegistro(index) {
     localStorage.setItem("editIndex", index);
-    window.location.href = "formOficina.html";
+    window.location.href = "formRegistros.html";
 }
 
-function guardarOficina(event) {
+function guardarRegistro(event) {
     event.preventDefault();
-    let form = event.target;
-    if (!form.checkValidity()) {
-        event.stopPropagation();
-        form.classList.add('was-validated');
+
+    let tipoRegistro = document.getElementById("tipo").value;
+    let fechaHora = document.getElementById("fechaHora").value;
+    let personaId = document.getElementById("persona").value;
+
+    if (!tipoRegistro || !fechaHora || !personaId) {
+        alert("Todos los campos son obligatorios");
         return;
     }
 
-    let nombre = document.getElementById("nombre").value;
-    let ubicacion = document.getElementById("ubicacion").value;
-    let limitePersonas = parseInt(document.getElementById("limitePersonas").value, 10); // Convertir a número
+    let personas = JSON.parse(localStorage.getItem("personas")) || [];
+    let persona = personas.find(p => p.id == personaId);  // Buscar la persona seleccionada
 
-    if (!nombre || !ubicacion || isNaN(limitePersonas) || limitePersonas <= 0) {
-        alert("Todos los campos son obligatorios y el límite de personas debe ser un número válido mayor a 0.");
-        return;
-    }
+    let registro = {
+        persona: { id: persona.id, nombre: persona.nombre },
+        tipoRegistro,
+        fechaHora
+    };
 
-    let oficina = { nombre, ubicacion, limitePersonas };
-    let oficinas = JSON.parse(localStorage.getItem("oficinas")) || [];
-
+    let registros = JSON.parse(localStorage.getItem("registros")) || [];
     let index = localStorage.getItem("editIndex");
+
     if (index !== null && index !== "null") {
-        oficinas[index] = oficina;  // Editar oficina existente
+        registros[index] = registro;  // Editar registro existente
         localStorage.removeItem("editIndex");
     } else {
-        oficinas.push(oficina);  // Agregar nueva oficina
+        registros.push(registro);  // Agregar nuevo registro
     }
 
-    localStorage.setItem("oficinas", JSON.stringify(oficinas));
-    window.location.href = "indexOficina.html";
+    localStorage.setItem("registros", JSON.stringify(registros));
+    window.location.href = "indexRegistros.html";
 }
 
 // Example starter JavaScript for disabling form submissions if there are invalid fields
@@ -154,5 +158,21 @@ function guardarOficina(event) {
             }, false)
         })
 })()
+function cargarPersonas() {
+    let personas = JSON.parse(localStorage.getItem("personas")) || [];
+    let selectPersona = document.getElementById("persona");
 
+    if (!selectPersona) return;  // Evita errores si el select no existe
 
+    selectPersona.innerHTML = "";
+    personas.forEach(persona => {
+        let option = document.createElement("option");
+        option.value = persona.id;
+        option.textContent = persona.nombre;
+        selectPersona.appendChild(option);
+    });
+}
+
+// Llamar a cargarPersonas() cuando cargue la página
+document.addEventListener("DOMContentLoaded", cargarPersonas);
+document.addEventListener("DOMContentLoaded", cargarRegistros);
