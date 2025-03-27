@@ -9,7 +9,7 @@ function cargarRegistros() {
     tbody.innerHTML = "";
     if (registros.length === 0) {
         tbody.innerHTML = `<tr>
-            <td colspan="3" class="text-white" style="background-color: #d895c6">No hay datos disponibles.</td>
+            <td colspan="4" class="text-white" style="background-color: #d895c6">No hay datos disponibles.</td>
         </tr>`;
         return;
     }
@@ -100,7 +100,7 @@ function eliminarRegistro(index) {
 
 function editarRegistro(index) {
     localStorage.setItem("editIndex", index);
-    window.location.href = "formRegistros.html";
+    window.location.href = "formRegistro.html";
 }
 
 function guardarRegistro(event) {
@@ -135,7 +135,7 @@ function guardarRegistro(event) {
     }
 
     localStorage.setItem("registros", JSON.stringify(registros));
-    window.location.href = "indexRegistros.html";
+    window.location.href = "indexRegistro.html";
 }
 
 // Example starter JavaScript for disabling form submissions if there are invalid fields

@@ -44,7 +44,7 @@
 
 button#agregar {
     background: none;
-    color: var(--moraoOscurin1);
+    color: var(--moraoClaro1);
 }
 
 button#agregar:hover {

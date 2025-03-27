@@ -1,57 +1,26 @@
-input#id {
+select#persona {
     background-color: var(--moraoOscurin);
     color: var(--moraoClaro);
     border: 1px solid var(--morao);
 }
 
-input#nombre {
+input#fechaHora {
     background-color: var(--moraoOscurin);
     color: var(--moraoClaro);
     border: 1px solid var(--morao);
 }
 
-input#email {
-    background-color: var(--moraoOscurin);
-    color: var(--moraoClaro);
-    border: 1px solid var(--morao);
-}
-
-input#direccion {
-    background-color: var(--moraoOscurin);
-    color: var(--moraoClaro);
-    border: 1px solid var(--morao);
-}
-
-input#fechaNacimiento {
-    background-color: var(--moraoOscurin);
-    color: var(--moraoClaro);
-    border: 1px solid var(--morao);
-}
-
-input#fechaNacimiento::-webkit-calendar-picker-indicator {
+input#fechaHora::-webkit-calendar-picker-indicator {
     filter: invert(1);
     opacity: 0.8;
     cursor: pointer;
 }
 
-input#telefono {
+select#tipo {
     background-color: var(--moraoOscurin);
     color: var(--moraoClaro);
     border: 1px solid var(--morao);
 }
-
-select#oficina {
-    background-color: var(--moraoOscurin);
-    color: var(--moraoClaro);
-    border: 1px solid var(--morao);
-}
-
-input#cargo {
-    background-color: var(--moraoOscurin);
-    color: var(--moraoClaro);
-    border: 1px solid var(--morao);
-}
-
 
 button#cancelar {
     background-color: var(--moraoOscurin1);

@@ -9,7 +9,7 @@ function cargarPersonas() {
     tbody.innerHTML = "";
     if(personas.length === 0){
         tbody.innerHTML = `<tr>
-        <td colspan="6" class="text-white" style="background-color: #d895c6">No hay datos disponibles.</td>
+        <td colspan="9" class="text-white" style="background-color: #d895c6">No hay datos disponibles.</td>
         </tr>`;
     }
 

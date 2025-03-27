@@ -13,6 +13,13 @@ input#ubicacion {
 
 }
 
+input#limitePersonas {
+    background-color: var(--moraoOscurin);
+    color: var(--moraoClaro);
+    border: 1px solid var(--morao);
+
+}
+
 button#guardar {
     background-color: var(--moraoClaro);
     color: var(--moraoOscurin1);

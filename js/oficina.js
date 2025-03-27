@@ -10,7 +10,7 @@ function cargarOficinas() {
     tbody.innerHTML = "";
     if (oficinas.length === 0) {
         tbody.innerHTML = `<tr>
-            <td colspan="3" class="text-white" style="background-color: #d895c6">No hay datos disponibles.</td>
+            <td colspan="4" class="text-white" style="background-color: #d895c6">No hay datos disponibles.</td>
         </tr>`;
     }
 
