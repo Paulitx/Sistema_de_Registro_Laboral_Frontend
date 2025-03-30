@@ -93,8 +93,26 @@ function confirmarEliminacion(index) {
 
 function eliminarRegistro(index) {
     let registros = JSON.parse(localStorage.getItem("registros")) || [];
+    let oficinas = JSON.parse(localStorage.getItem("oficinas")) || [];
+    let personas = JSON.parse(localStorage.getItem("personas")) || [];
+
+    let registro = registros[index];
+    if(!registro){return;}
+    //aumenta la capacidad en el limite de personas si se elimina explicitamente una entrada del registro
+    let persona = personas.find(p => p.id == registro.persona.id);
+    let oficina = oficinas.find(o => o.nombre === persona.oficina.nombre);
+    //valida que si ya una persona se registró con una salida, no aumente al eliminar su entrada
+    if (registro.tipoRegistro === "entrada" && oficina) {
+        let verificarSalida = registros
+            .some(r => r.persona.id == persona.id && r.tipoRegistro === "salida" && r.fechaHora >registro.fechaHora);
+        if (!verificarSalida) {
+            oficina.limitePersonas += 1;
+        }
+    }
+    //elimina el registro
     registros.splice(index, 1);
     localStorage.setItem("registros", JSON.stringify(registros));
+    localStorage.setItem("oficinas", JSON.stringify(oficinas));
     cargarRegistros();
 }
 
@@ -106,6 +124,10 @@ function editarRegistro(index) {
 function guardarRegistro(event) {
     event.preventDefault();
 
+    let oficinas = JSON.parse(localStorage.getItem("oficinas")) || [];
+    let registros = JSON.parse(localStorage.getItem("registros")) || [];
+    let personas = JSON.parse(localStorage.getItem("personas")) || [];
+
     let tipoRegistro = document.getElementById("tipo").value;
     let fechaHora = document.getElementById("fechaHora").value;
     let personaId = document.getElementById("persona").value;
@@ -115,8 +137,9 @@ function guardarRegistro(event) {
         return;
     }
 
-    let personas = JSON.parse(localStorage.getItem("personas")) || [];
-    let persona = personas.find(p => p.id == personaId);  // Buscar la persona seleccionada
+
+    let persona = personas.find(p => p.id == personaId);  //busca la persona seleccionada
+    let oficina = oficinas.find(o => o.nombre === persona.oficina.nombre);
 
     let registro = {
         persona: { id: persona.id, nombre: persona.nombre },
@@ -124,17 +147,68 @@ function guardarRegistro(event) {
         fechaHora
     };
 
-    let registros = JSON.parse(localStorage.getItem("registros")) || [];
+
+
     let index = localStorage.getItem("editIndex");
 
+    let registrosPersona = registros.filter(r => r.persona.id == personaId);
+    let ultimaEntrada = registrosPersona
+        .filter(r=>r.tipoRegistro === "entrada")
+        .sort((a,b) => new Date(b.fechaHora) - new Date(a.fechaHora))[0];
+
+    //validacion  para que no se pueda registrar una salida a una hora menor de la hora de entrada, por ejemplo si se entró a las 3pm, no se puede salir a las 2pm del mismo dia
+    if(tipoRegistro === "salida" && ultimaEntrada){
+        let fechaEntrada = new Date(ultimaEntrada.fechaHora);
+        let fechaSalida = new Date(fechaHora);
+        if(fechaSalida < fechaEntrada){
+            alert("La fecha y/u hora de salida no puede ser menor que la ultima hora de entrada");
+            return;
+        }
+    }
+
+
     if (index !== null && index !== "null") {
-        registros[index] = registro;  // Editar registro existente
+        //Aqui se edita el registro
+        let registroAnterior = registros[index];
+        if(registroAnterior.tipoRegistro === "entrada" && tipoRegistro === "salida") {
+            oficina.limitePersonas += 1;
+        }
+        if(registroAnterior.tipoRegistro === "salida" && tipoRegistro === "entrada"){
+            if(oficina.limitePersonas > 0){
+                oficina.limitePersonas -= 1;
+            }else{
+                alert("La oficina ya se encuentra llena.")
+                return;
+            }
+        }
+        registros[index] = registro;  //editar registro existente
         localStorage.removeItem("editIndex");
+
     } else {
-        registros.push(registro);  // Agregar nuevo registro
+        //Aqui se crea un nuevo registro
+
+        //validacion no se puede salir sin entrar
+        if (tipoRegistro === "salida") {
+            if (!ultimaEntrada) {
+                alert("No se puede registrar una salida sin una entrada previa");
+                return;
+            }
+            oficina.limitePersonas += 1;
+        }
+
+        if(tipoRegistro === "entrada"){
+            if(oficina.limitePersonas > 0){
+                oficina.limitePersonas -= 1;
+            }else{
+                alert("La oficina ya se encuentra llena.")
+                return;
+            }
+        }
+        registros.push(registro);  //Agregar nuevo registro
     }
 
     localStorage.setItem("registros", JSON.stringify(registros));
+    localStorage.setItem("oficinas", JSON.stringify((oficinas)));
     window.location.href = "indexRegistro.html";
 }
 
@@ -165,7 +239,9 @@ function cargarPersonas() {
     if (!selectPersona) return;  // Evita errores si el select no existe
 
     selectPersona.innerHTML = "";
-    personas.forEach(persona => {
+    personas
+        .filter(persona => persona.estado === "activo")
+        .forEach(persona => {
         let option = document.createElement("option");
         option.value = persona.id;
         option.textContent = persona.nombre;

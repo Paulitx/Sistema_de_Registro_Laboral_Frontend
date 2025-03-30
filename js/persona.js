@@ -25,6 +25,7 @@ function cargarPersonas() {
                     <td>${persona.oficina.nombre}</td>
                     <td>${persona.telefono}</td>
                     <td>${persona.cargo}</td>
+                    <td>${persona.estado}</td>
                     <td>
                         <button onclick="editarPersona(${index})" class="btn btn-editar"> 
                             <i class="bi bi-pencil-square"></i> Editar</button>
@@ -123,12 +124,14 @@ function guardarPersona(event) {
     let telefono = document.getElementById("telefono").value;
     let cargo = document.getElementById("cargo").value;
     let oficinaSeleccionada = document.getElementById("oficina").value;
+    let estado = document.getElementById("estado").value;
+
 
 
     //obtener el objeto oficina completo usando el índice seleccionado
     let oficina = oficinas[oficinaSeleccionada];
 
-    if (!id || !nombre || !email || !direccion || !fechaNacimiento || !oficina || !telefono || !cargo) {
+    if (!id || !nombre || !email || !direccion || !fechaNacimiento || !oficina || !telefono || !cargo || !estado) {
         alert("Todos los campos son obligatorios");
         return;
     }
@@ -142,7 +145,7 @@ function guardarPersona(event) {
     }
 
     //guardar persona luego de validar
-    let persona = { id, nombre, email, direccion, fechaNacimiento, oficina, telefono, cargo };
+    let persona = { id, nombre, email, direccion, fechaNacimiento, oficina, telefono, cargo, estado };
     let personas = JSON.parse(localStorage.getItem("personas")) || [];
 
     let index = localStorage.getItem("editIndex");

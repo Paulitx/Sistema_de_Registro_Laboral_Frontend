@@ -141,6 +141,16 @@
           El campo Cargo es obligatorio.
         </div>
       </div>
+      <div class="col-md-6">
+        <label for="estado">Estado</label>
+        <select id="estado" class="form-control" required>
+          <option value="activo">Activo</option>
+          <option value="inactivo">Inactivo</option>
+        </select>
+        <div class="invalid-feedback">
+          Debe seleccionar un estado.
+        </div>
+      </div>
 
       <div class="col-md-12 text-end mt-4">
       <button id="guardar" type= "submit" class="btn" > <i class="bi bi-floppy-fill"></i> Guardar </button>

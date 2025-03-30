@@ -3,7 +3,6 @@ const registrosPorPagina = 5;
 
 function cargarOficinas() {
     let oficinas = JSON.parse(localStorage.getItem("oficinas")) || [];
-    let personas = JSON.parse(localStorage.getItem("personas")) || [];
     let tbody = document.getElementById("oficinas-list");
     let totalPaginas = Math.ceil(oficinas.length / registrosPorPagina);
 
@@ -17,14 +16,11 @@ function cargarOficinas() {
     let oficinasPagina = oficinas.slice((paginaActual - 1) * registrosPorPagina, paginaActual * registrosPorPagina);
     oficinasPagina.forEach((oficina, index) => {
 
-        let personasEnOficina = personas.filter(p => p.oficina.nombre === oficina.nombre).length;
 
-        // Calcular el número de personas disponibles
-        let personasDisponibles = oficina.limitePersonas - personasEnOficina;
         let fila = `<tr>
                     <td>${oficina.nombre}</td>
                     <td>${oficina.ubicacion}</td>
-                    <td>${personasDisponibles}</td>
+                    <td>${oficina.limitePersonas}</td>
                     <td>
                         <button onclick="editarOficina(${index})" class="btn btn-editar"> 
                             <i class="bi bi-pencil-square"></i> Editar</button>
