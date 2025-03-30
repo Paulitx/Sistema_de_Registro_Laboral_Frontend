@@ -142,7 +142,7 @@ function guardarRegistro(event) {
     let oficina = oficinas.find(o => o.nombre === persona.oficina.nombre);
 
     let registro = {
-        persona: { id: persona.id, nombre: persona.nombre },
+        persona: { id: persona.id, nombre: persona.nombre, oficina: persona.oficina},
         tipoRegistro,
         fechaHora
     };

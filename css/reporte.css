@@ -1,0 +1,17 @@
+.graf_container {
+    background-color: var(--moraoOscurin); /* Color de fondo del recuadro */
+    padding: 20px;
+    border-radius: 20px; /* Bordes redondeados */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3); /* Sombra suave */
+    margin: 30px; /* Centra horizontalmente */
+    text-align: start; /* Centra el contenido dentro del recuadro */
+    flex-direction: column; /* Coloca los elementos de forma vertical (si es un formulario, por ejemplo) */
+    display: flex;
+}
+
+#grafPersona {
+    display: flex;
+    justify-content: center;
+    margin: 70px ;
+
+}
