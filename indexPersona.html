@@ -18,6 +18,11 @@
     <script>verificarAutenticacion();</script>
 
     <script src ="js/persona.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.1/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.23/jspdf.plugin.autotable.min.js"></script>
+
+
 </head>
 <style>
     table, th, td {
@@ -77,6 +82,9 @@
             <i class="bi bi-plus-circle-fill"></i> Agregar Oficina
         </button>
     </div>
+
+    <button onclick="exportarExcel()" class="btn btn-primary">Exportar a Excel</button>
+    <button onclick="exportarPDF()" class="btn btn-danger">Exportar a PDF</button>
 
     <div class="table-responsive">
         <table id="tablita" >

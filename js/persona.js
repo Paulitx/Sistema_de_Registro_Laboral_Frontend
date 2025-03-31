@@ -207,3 +207,82 @@ document.addEventListener("DOMContentLoaded", function() {
         iconoEstado.classList.add("text-success");
     }
 });
+
+function exportarExcel(){
+    let personas = JSON.parse(localStorage.getItem("personas")) || [];
+    if(personas.length === 0){
+        alert("No hay personas disponibles para exportar");
+        return;
+    }
+
+
+    const data = personas.map(persona => {
+        return   {            "id": persona.id,
+            "nombre": persona.nombre,
+            "email": persona.email,
+            "direccion": persona.direccion,
+            "fechaNacimiento": persona.fechaNacimiento,
+            "oficina": persona.oficina.nombre,
+            "telefono": persona.telefono,
+            "cargo": persona.cargo,
+            "estado": persona.estado
+        }
+
+    });
+
+
+    const ws = XLSX.utils.json_to_sheet(data);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "personas");
+
+    XLSX.writeFile(wb, "personas.xlsx");
+}
+
+function exportarPDF(){
+    let personas = JSON.parse(localStorage.getItem("personas")) || [];
+    if(personas.length === 0){
+        alert("No hay datos disponibles para exportar");
+        return;
+    }
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+
+    doc.setFontSize(18);
+    doc.text("Lista de personas", 14, 10);
+
+    const headers = [["ID", "Nombre", "Email", "Dirección", "Fecha Nacimiento", "Oficina", "Teléfono", "Cargo", "Estado"]];
+
+    const data = personas.map(persona => [
+        persona.id,
+        persona.nombre,
+        persona.email,
+        persona.direccion,
+        persona.fechaNacimiento,
+        persona.oficina.nombre,
+        persona.telefono,
+        persona.cargo,
+        persona.estado
+    ]);
+    doc.autoTable({
+        startY: 20,
+        head: headers,
+        body: data,
+        theme: 'striped',
+        styles: {
+            fontSize: 10
+        },
+        columnStyles: {
+            0: { cellWidth: 10 }, //id
+            1: { cellWidth: 20 }, //nombre
+            2: { cellWidth: 40 }, //email
+            3: { cellWidth: 20 }, //dirección
+            4: { cellWidth: 25 }, //fecha nacimiento
+            5: { cellWidth: 20 }, //oficina
+            6: { cellWidth: 20 }, //telefono
+            7: { cellWidth: 20 }, //cargo
+            8: { cellWidth: 15 }  //estado
+        },
+        margin: { top: 20 }
+    });
+    doc.save("personas.pdf");
+}

@@ -29,10 +29,7 @@
             }
         });
     </script>
-
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDQlKcIqKYi1J4AXQhmXgFwT4CLgj-eNh4"></script>
-
-
+    <script async src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDQlKcIqKYi1J4AXQhmXgFwT4CLgj-eNh4&callback=inicializarMapa"></script>
 </head>
 <body>
 <nav class="navbar navbar-expand-lg navbar-custom">
@@ -95,6 +92,11 @@
                 <label for="ubicacion">Ubicación</label>
                 <input id="ubicacion" class="form-control" required/>
                 <div class="invalid-feedback">El espacio Ubicación es obligatorio.</div>
+            </div>
+            <!--AQUI ESTA PARTE DEL CSS, CAMBIAR DESPUES-->
+            <button id="btnMostrarMapa" type="button">Mostrar mapa</button>
+            <div id="mapaContainer" style="display: none;">
+                <div id="googleMap" style="width: 100%; height:400px; margin-top: 10px;"></div>
             </div>
 
             <div class="col-md-12 mt-2">

@@ -150,5 +150,29 @@ function guardarOficina(event) {
             }, false)
         })
 })()
+window.onload = function(){
+    let mapa;
+    let mapaCargado = false;
+    function inicializarMapa(){
+        if(!mapaCargado){ //solo se inicializa una vez
+            mapa = new google.maps.Map(document.getElementById("googleMap"), {
+                center: { lat: 10.01625, lng: -84.21163 }, zoom: 12 //ubicacion inicial alajuela
+            });
+            mapaCargado = true;//verifica si el mapa se cargó
 
+            mapa.addListener("click", function (event){
+                let latitud = event.latLng.lat();
+                let longitud = event.latLng.lng();
+                //muestra los datos en el espacio "ubicacion"
+                document.getElementById("ubicacion").value = `${latitud}, ${longitud}`;
+            });
+        }
+    }
+    //muestra el mapa cuando se toca el boton
+    document.getElementById("btnMostrarMapa").addEventListener("click", function () {
+        document.getElementById("mapaContainer").style.display = "block";
+        inicializarMapa();
+    })
+
+}
 

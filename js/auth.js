@@ -1,4 +1,3 @@
-// Función para iniciar sesión
 function login(event) {
     event.preventDefault();
 

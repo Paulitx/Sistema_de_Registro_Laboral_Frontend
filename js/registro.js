@@ -252,3 +252,64 @@ function cargarPersonas() {
 // Llamar a cargarPersonas() cuando cargue la página
 document.addEventListener("DOMContentLoaded", cargarPersonas);
 document.addEventListener("DOMContentLoaded", cargarRegistros);
+
+
+
+function exportarExcel(){
+    let registros = JSON.parse(localStorage.getItem("registros")) || [];
+    if(registros.length === 0){
+        alert("No hay registros disponibles para exportar");
+        return;
+    }
+    const encabezados = ["Persona", "Tipo de Registro", "Fecha y Hora"];
+
+    const data = registros.map(registro => {
+        let personaNombre = registro.persona ? registro.persona.nombre : "Desconocido";
+        return [personaNombre, registro.tipoRegistro, registro.fechaHora];
+    });
+
+
+    const ws = XLSX.utils.json_to_sheet([encabezados, ...data]);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "registros");
+
+    XLSX.writeFile(wb, "registros.xlsx");
+}
+
+function exportarPDF(){
+    let registros = JSON.parse(localStorage.getItem("registros")) || [];
+    if(registros.length === 0){
+        alert("No hay datos disponibles para exportar");
+        return;
+    }
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+
+    doc.setFontSize(18);
+    doc.text("Lista de registros", 14, 20);
+
+    const headers = ["Persona", "Tipo de Registro", "Fecha y Hora"];
+
+    const data = registros.map(registro => {
+        let personaNombre = registro.persona ? registro.persona.nombre : "Desconocido";
+        return [personaNombre, registro.tipoRegistro, registro.fechaHora];
+    });
+
+    doc.autoTable({
+        startY: 30,
+        head: [headers],
+        body: data,
+        theme: 'striped',
+        styles: {
+            fontSize: 10,
+            cellPadding: 3,
+        },
+        columnStyles: {
+            0: { cellWidth: 40 }, //Persona
+            1: { cellWidth: 40 }, //Tipo registro
+            2: { cellWidth: 40 }, //fecha y hora
+
+        },
+    });
+    doc.save("registros.pdf");
+}
