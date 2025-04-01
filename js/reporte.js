@@ -6,6 +6,29 @@ document.addEventListener("DOMContentLoaded", () => {
     generarGraficoPersonasActuales(registros);
 });
 
+window.addEventListener("load", function () {
+    document.getElementById("grafPersona").style.display = "none";
+    document.getElementById("grafOficinas").style.display = "none";
+    document.getElementById("grafPersonasActuales").style.display = "none";
+});
+
+document.getElementById("grafico").addEventListener("change", function () {
+    const seleccion = this.value;
+
+        document.getElementById("grafPersona").style.display = "none";
+        document.getElementById("grafOficinas").style.display = "none";
+        document.getElementById("grafPersonasActuales").style.display = "none";
+
+    if(seleccion === "persona") {
+        document.getElementById("grafPersona").style.display = "block";
+    } else if (seleccion === "oficinas") {
+        document.getElementById("grafOficinas").style.display = "block";
+    } else if (seleccion === "actuales") {
+    document.getElementById("grafPersonasActuales").style.display = "block";
+    }
+
+});
+
 function personaMayorIngresos(registros) {
     const mayorPersona = {};
     registros.forEach(r => {
@@ -31,9 +54,14 @@ function personasEnOficina(registros) {
     const personaActual = {};
     registros.forEach(r => {
         if (r.tipoRegistro === "entrada") {
-            personaActual[r.persona.id] = r.persona.nombre;
+            personaActual[r.persona.nombre] = (personaActual[r.persona.nombre] || 0) + 1;
         } else if (r.tipoRegistro === "salida") {
-            delete personaActual[r.persona.id];
+            if(personaActual[r.persona.nombre]) {
+                personaActual[r.persona.nombre]--;
+                if (personaActual[r.persona.nombre] <= 0){
+                    delete personaActual[r.persona.id];
+                }
+            }
         }
     });
     return personaActual;

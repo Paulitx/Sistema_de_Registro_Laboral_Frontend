@@ -199,6 +199,76 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 });
 
+document.addEventListener("DOMContentLoaded", function () {
+    let atributoBusqueda = document.getElementById("atributoBusqueda");
+    let inputBusqueda = document.getElementById("busqueda");
+    let sugerenciasDiv = document.getElementById("sugerencias");
+
+    inputBusqueda.addEventListener("input", function () {
+        let valor = inputBusqueda.value.toLowerCase();
+        let atributo = atributoBusqueda.value;
+        let personas = JSON.parse(localStorage.getItem("personas")) || [];
+
+        if (!atributo || valor.trim() === "") {
+            sugerenciasDiv.innerHTML = "";
+            return;
+        }
+
+        let resultados = personas.filter(persona => {
+            return persona[atributo] && persona[atributo].toLowerCase().includes(valor);
+        });
+
+        // Mostrar sugerencias
+        sugerenciasDiv.innerHTML = "";
+        resultados.forEach(persona => {
+            let elemento = document.createElement("a");
+            elemento.href = "#";
+            elemento.classList.add("list-group-item", "list-group-item-action");
+            elemento.textContent = persona[atributo];
+
+            elemento.addEventListener("click", function () {
+                inputBusqueda.value = persona[atributo];
+                sugerenciasDiv.innerHTML = "";
+                mostrarResultados(resultados);
+            });
+
+            sugerenciasDiv.appendChild(elemento);
+        });
+
+        // Si no hay coincidencias, mostrar sugerencias alternativas
+        if (resultados.length === 0) {
+            sugerenciasDiv.innerHTML = "<div class='list-group-item'>No se encontraron coincidencias</div>";
+        }
+    });
+});
+
+// Función para mostrar resultados en la tabla
+function mostrarResultados(resultados) {
+    let tbody = document.getElementById("personas-list");
+    tbody.innerHTML = "";
+
+    resultados.forEach((persona, index) => {
+        let fila = `<tr>
+                    <td>${persona.id}</td>
+                    <td>${persona.nombre}</td>
+                    <td>${persona.email}</td>
+                    <td>${persona.direccion}</td>
+                    <td>${persona.fechaNacimiento}</td>
+                    <td>${persona.oficina.nombre}</td>
+                    <td>${persona.telefono}</td>
+                    <td>${persona.cargo}</td>
+                    <td>${persona.estado}</td>
+                    <td>
+                        <button onclick="editarPersona(${index})" class="btn btn-editar"> 
+                            <i class="bi bi-pencil-square"></i> Editar</button>
+                        <button onclick="confirmarEliminacion(${index})" class="btn btn-eliminar"> 
+                            <i class="bi bi-trash-fill"></i> Eliminar</button>
+                    </td>
+                </tr>`;
+        tbody.innerHTML += fila;
+    });
+}
+
 
 document.addEventListener("DOMContentLoaded", function() {
     let personas = JSON.parse(localStorage.getItem("personas")) || [];

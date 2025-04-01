@@ -83,6 +83,24 @@
         </button>
     </div>
 
+    <div class="mb-3">
+        <label for="atributoBusqueda" class="form-label">Buscar por:</label>
+        <select id="atributoBusqueda" class="form-select">
+            <option value="" selected disabled>Seleccione un atributo</option>
+            <option value="nombre">Nombre</option>
+            <option value="email">Correo</option>
+            <option value="direccion">Dirección</option>
+            <option value="telefono">Teléfono</option>
+            <option value="cargo">Cargo</option>
+        </select>
+    </div>
+
+    <div class="mb-3">
+        <label for="busqueda" class="form-label">Buscar:</label>
+        <input type="text" id="busqueda" class="form-control" placeholder="Escriba su búsqueda...">
+        <div id="sugerencias" class="list-group"></div>
+    </div>
+
     <button onclick="exportarExcel()" class="btn btn-primary">Exportar a Excel</button>
     <button onclick="exportarPDF()" class="btn btn-danger">Exportar a PDF</button>
 

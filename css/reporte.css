@@ -9,8 +9,8 @@
     display: flex;
 }
 
-#grafPersona {
-    display: flex;
+#grafPersona, #grafOficinas, #grafPersonasActuales {
+    display: none;
     justify-content: center;
     margin: 70px ;
 
