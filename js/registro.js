@@ -85,6 +85,12 @@ function mostrarPaginacion(totalPaginas) {
 
 
 function confirmarEliminacion(index) {
+
+    if (localStorage.getItem("role") === "visor") {
+        alert("No tienes permisos para eliminar.");
+        return;  //si es visor, no hace nada
+    }
+
     const confirmacion = confirm("¿Desea eliminar este registro?");
     if (confirmacion) {
         eliminarRegistro(index);
@@ -109,6 +115,16 @@ function eliminarRegistro(index) {
             oficina.limitePersonas += 1;
         }
     }
+    //reduce la capacidad en el limite de personas si se elimina explicitamente una salida del registro
+    if (registro.tipoRegistro === "salida" && oficina) {
+        let verificarEntrada = registros
+            .some(r => r.persona.id == persona.id && r.tipoRegistro === "entrada" && r.fechaHora < registro.fechaHora);
+
+        if (verificarEntrada) {
+            oficina.limitePersonas -= 1;
+        }
+    }
+
     //elimina el registro
     registros.splice(index, 1);
     localStorage.setItem("registros", JSON.stringify(registros));

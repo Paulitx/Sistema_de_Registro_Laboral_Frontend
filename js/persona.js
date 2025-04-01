@@ -85,6 +85,11 @@ function mostrarPaginacion(totalPaginas) {
 
 
 function confirmarEliminacion(index) {
+    if (localStorage.getItem("role") === "visor") {
+        alert("No tienes permisos para eliminar.");
+        return;  //Si es visor, no hace nada
+    }
+
     const confirmacion = confirm("¿Desea eliminar esta persona?");
     if (confirmacion) {
         eliminarPersona(index);

@@ -2,8 +2,7 @@ function login(event) {
     event.preventDefault();
 
     let form = event.target;
-
-    if(!form.checkValidity()){
+    if (!form.checkValidity()) {
         event.stopPropagation();
         form.classList.add('was-validated');
         return;
@@ -12,28 +11,65 @@ function login(event) {
     let username = document.getElementById("username").value;
     let password = document.getElementById("password").value;
 
-    // Credenciales de prueba (puedes cambiarlo a un sistema con backend)
-    const validUser = "admin";
-    const validPass = "1234";
+    // Credenciales con roles
+    const users = {
+        "admin": { password: "1234", role: "admin" },
+        "registrador": { password: "5678", role: "registrador" },
+        "visor": { password: "abcd", role: "visor" }
+    };
 
-    if (username === validUser && password === validPass) {
+    if (users[username] && users[username].password === password) {
         localStorage.setItem("auth", "true");
-        window.location.href = "NavBar.html"; // Redirigir a la página principal
+        localStorage.setItem("role", users[username].role);
+        window.location.href = "NavBar.html";
     } else {
         alert("Usuario o contraseña incorrectos");
     }
 }
 
-// Función para cerrar sesión
 function logout() {
     localStorage.removeItem("auth");
+    localStorage.removeItem("role");
     window.location.href = "login.html";
 }
 
-// Función para verificar autenticación
 function verificarAutenticacion() {
-    if (localStorage.getItem("auth") !== "true") {
-        window.location.href = "login.html"; // Redirigir si no está autenticado
+    let auth = localStorage.getItem("auth");
+    let role = localStorage.getItem("role");
+    if (auth !== "true") {
+        window.location.href = "login.html";
+        return;
+    }
+
+    let pathname = window.location.pathname.split("/").pop();
+    let restrictedForRegistrador = ["formRegistro.html", "indexRegistro.html"];
+    let allowedForVisor = ["indexPersona.html", "indexRegistro.html", "indexOficina.html", "reporte.html"];
+
+    if (role === "registrador" && !restrictedForRegistrador.includes(pathname)) {
+        alert("No tienes acceso a esta página.");
+        window.location.href = "NavBar.html";
+    }
+
+    if (role === "visor") {
+        if (!allowedForVisor.includes(pathname)) {
+            alert("No tienes acceso a esta página");
+            window.location.href = "NavBar.html";
+        }
+
+        //seshabilitar botones de agregar, editar y eliminar para el visor
+        document.addEventListener("DOMContentLoaded", () => {
+            let agregarBtn = document.getElementById("agregar");
+            if (agregarBtn) agregarBtn.style.display = "none";
+
+            let editarBtns = document.querySelectorAll(".btn-editar");
+            let eliminarBtns = document.querySelectorAll(".btn-eliminar");
+
+            editarBtns.forEach(btn => btn.style.display = "none");
+            eliminarBtns.forEach(btn => btn.style.display = "none");
+        });
+        window.confirmarEliminacion = function(index) {
+            alert("No tienes permisos para eliminar elementos.");
+        };
     }
 }
 
