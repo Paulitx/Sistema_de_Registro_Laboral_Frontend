@@ -155,9 +155,17 @@ function guardarOficina(event) {
             }, false)
         })
 })()
+
 window.onload = function(){
     let mapa;
     let mapaCargado = false;
+    let mapaContainer = document.getElementById("mapaContainer");
+    let boton = document.getElementById("btnMostrarMapa");
+    let icono = document.createElement("i");
+
+    icono.className = "bi bi-eye me-2";
+    boton.prepend(icono);
+
     function inicializarMapa(){
         if(!mapaCargado){ //solo se inicializa una vez
             mapa = new google.maps.Map(document.getElementById("googleMap"), {
@@ -173,11 +181,21 @@ window.onload = function(){
             });
         }
     }
-    //muestra el mapa cuando se toca el boton
-    document.getElementById("btnMostrarMapa").addEventListener("click", function () {
-        document.getElementById("mapaContainer").style.display = "block";
-        inicializarMapa();
-    })
 
-}
+    //muestra el mapa cuando se toca el boton
+    boton.addEventListener("click", function () {
+        if(mapaContainer.style.display === "none" || mapaContainer.style.display === "") {
+            mapaContainer.style.display = "block";
+            inicializarMapa();
+            boton.textContent = "Ocultar mapa";
+            icono.className = "bi bi-eye-slash me-2";
+            boton.prepend(icono);
+        } else {
+            mapaContainer.style.display = "none";
+            boton.textContent = "Mostrar mapa"
+            icono.className = "bi bi-eye me-2";
+            boton.prepend(icono);
+        }
+    });
+};
 

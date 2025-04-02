@@ -1,4 +1,3 @@
-
 #oficinas-list .btn-editar {
     background-color: var(--moraoOscurin1);
     color: var(--moraoClaro);
@@ -25,8 +24,7 @@
 
 #tablita {
     width: 100%;
-    border: 2px solid var(--amarillinClaro);
-    border-color: #dbd5fd;
+    border: 2px solid;
     border-collapse: collapse;
     border-radius: 10px;
     overflow: hidden;
@@ -50,4 +48,42 @@ button#agregar {
 button#agregar:hover {
     background: none;
     color: var(--rosao);
+}
+
+#paginacion {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 15px;
+    border: none;
+}
+
+#paginacion button {
+    background-color: var(--moraoClaro) !important;
+    color: var(--moraoOscurin1) !important;
+    padding: 8px 14px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: all 0.3s ease-in-out;
+    border: none;
+}
+
+#paginacion .btn-secondary {
+    background-color: var(--moraoOscuro1) !important;
+    color: var(--moraoClaro) !important;
+    border: none;
+}
+
+#paginacion button:hover {
+    background-color: var(--moraoOscuro1) !important;
+    color: var(--moraoClaro) !important;
+}
+
+#paginacion button[disabled] {
+    background-color: var(--morao) !important;
+    color: var(--moraoClaro) !important;
+    border: none;
+    font-weight: bold;
+    opacity: 1;
 }

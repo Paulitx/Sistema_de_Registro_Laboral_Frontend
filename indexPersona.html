@@ -67,6 +67,11 @@
                         <li><a class="dropdown-item" href="formOficina.html"> <i class="bi bi-plus-circle-fill"></i> Agregar Oficina</a></li>
                         <li><a class="dropdown-item" href="indexOficina.html"> <i class="bi bi-list-task"></i> Lista Oficinas</a></li>
                     </ul>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link" aria-current="page" href="reporte.html">Reportes</a>
+                </li>
             </ul>
                 <button type="button" class="btn ms-auto" onclick="logout()"> <i class="bi bi-box-arrow-left"></i>
                     Cerrar Sesion</button>
@@ -84,25 +89,21 @@
     </div>
 
     <div class="mb-3">
-        <label for="atributoBusqueda" class="form-label">Buscar por:</label>
-        <select id="atributoBusqueda" class="form-select">
-            <option value="" selected disabled>Seleccione un atributo</option>
-            <option value="nombre">Nombre</option>
-            <option value="email">Correo</option>
-            <option value="direccion">Dirección</option>
-            <option value="telefono">Teléfono</option>
-            <option value="cargo">Cargo</option>
-        </select>
-    </div>
+        <div class="d-flex align-items-center">
+            <label for="atributoBusqueda" class="form-label me-2"></label>
+            <select id="atributoBusqueda" class="form-select me-3" style="width: 300px;">
+                <option value="" selected disabled>Seleccione un atributo</option>
+                <option value="nombre">Nombre</option>
+                <option value="email">Correo</option>
+                <option value="direccion">Dirección</option>
+                <option value="telefono">Teléfono</option>
+                <option value="cargo">Cargo</option>
+            </select>
 
-    <div class="mb-3">
-        <label for="busqueda" class="form-label">Buscar:</label>
-        <input type="text" id="busqueda" class="form-control" placeholder="Escriba su búsqueda...">
-        <div id="sugerencias" class="list-group"></div>
+            <label for="busqueda" class="form-label me-2"></label>
+            <input type="text" id="busqueda" class="form-control flex-grow-1" placeholder="Escriba su búsqueda...">
+        </div>
     </div>
-
-    <button onclick="exportarExcel()" class="btn btn-primary">Exportar a Excel</button>
-    <button onclick="exportarPDF()" class="btn btn-danger">Exportar a PDF</button>
 
     <div class="table-responsive">
         <table id="tablita" >
@@ -124,13 +125,22 @@
             </tbody>
         </table>
 
-            <div id="paginacion" class="text-center mt-3"></div>
-                <script type ="text/javascript">
-                    document.addEventListener("DOMContentLoaded", function (){
-                        cargarPersonas();
-                        localStorage.removeItem("editIndex");
-                    });
-                </script>
+        <div class="d-flex justify-content-end mb-3 mt-2">
+            <button id="excel" onclick="exportarExcel()" class="btn btn-sm me-2">
+                <i class="bi bi-file-earmark-excel"></i> Excel
+            </button>
+            <button id="pdf" onclick="exportarPDF()" class="btn btn-sm">
+                <i class="bi bi-file-earmark-pdf"></i> PDF
+            </button>
+        </div>
+
+        <div id="paginacion" class="text-center mt-3"></div>
+        <script type ="text/javascript">
+            document.addEventListener("DOMContentLoaded", function (){
+                cargarPersonas();
+                localStorage.removeItem("editIndex");
+            });
+        </script>
     </div>
 </div>
 <footer class="mt-3">

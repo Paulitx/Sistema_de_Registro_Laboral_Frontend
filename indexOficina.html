@@ -62,6 +62,11 @@
                     <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
                         <li><a class="dropdown-item" href="formOficina.html"> <i class="bi bi-plus-circle-fill"></i> Agregar Oficinas</a></li>
                     </ul>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link" aria-current="page" href="reporte.html">Reportes</a>
+                </li>
             </ul>
             <button type="button" class="btn ms-auto" onclick="logout()"> <i class="bi bi-box-arrow-left"></i>
                 Cerrar Sesión</button>
@@ -92,13 +97,14 @@
             <tbody id="oficinas-list">
             </tbody>
         </table>
-        <div id="paginacion" class="text-center mt-3"> </div> <!--botones de paginación-->
-        <script type ="text/javascript">
-            document.addEventListener("DOMContentLoaded", function (){
-                cargarOficinas();
-                localStorage.removeItem("editIndex");
-            });
-        </script>
+        <div id="paginacion" class="text-center mt-3">  <!--botones de paginación-->
+            <script type ="text/javascript">
+                document.addEventListener("DOMContentLoaded", function (){
+                    cargarOficinas();
+                    localStorage.removeItem("editIndex");
+                });
+            </script>
+        </div>
     </div>
 </div>
 <footer class="mt-3">

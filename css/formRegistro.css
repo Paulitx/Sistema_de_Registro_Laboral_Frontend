@@ -1,10 +1,4 @@
-select#persona {
-    background-color: var(--moraoOscurin);
-    color: var(--moraoClaro);
-    border: 1px solid var(--morao);
-}
-
-input#fechaHora {
+select#persona, input#fechaHora, select#tipo {
     background-color: var(--moraoOscurin);
     color: var(--moraoClaro);
     border: 1px solid var(--morao);
@@ -16,36 +10,24 @@ input#fechaHora::-webkit-calendar-picker-indicator {
     cursor: pointer;
 }
 
-select#tipo {
-    background-color: var(--moraoOscurin);
-    color: var(--moraoClaro);
-    border: 1px solid var(--morao);
-}
-
 button#cancelar {
     background-color: var(--moraoOscurin1);
     color: var(--moraoClaro);
     box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
-
+    min-width: 100px;
+    height: 40px;
 }
 
 button#guardar {
     background-color: var(--moraoClaro);
     color: var(--moraoOscurin1);
     box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
-
+    min-width: 100px;
+    height: 40px;
 }
 
-button#cancelar:hover {
+button#cancelar:hover, button#guardar:hover {
     background-color: var(--moraoOscuro1);
     border: 1px solid var(--moraoOscuro1);
     color: var(--moraoClaro);
-
-}
-
-button#guardar:hover {
-    background-color: var(--moraoOscuro1);
-    border: 1px solid var(--moraoOscuro1);
-    color: var(--moraoClaro);
-
 }

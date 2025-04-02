@@ -1,32 +1,32 @@
 document.addEventListener("DOMContentLoaded", () => {
     const registros = JSON.parse(localStorage.getItem("registros")) || [];
 
-    generarGraficoPersona(registros)
+    generarGraficoPersona(registros);
     generarGraficoOficinas(registros);
     generarGraficoPersonasActuales(registros);
-});
 
-window.addEventListener("load", function () {
-    document.getElementById("grafPersona").style.display = "none";
-    document.getElementById("grafOficinas").style.display = "none";
-    document.getElementById("grafPersonasActuales").style.display = "none";
-});
+    const grafContainer = document.querySelector(".graf_container");
+    const graficos = {
+        persona: document.getElementById("grafPersona"),
+        oficinas: document.getElementById("grafOficinas"),
+        actuales: document.getElementById("grafPersonasActuales")
+    };
 
-document.getElementById("grafico").addEventListener("change", function () {
-    const seleccion = this.value;
+    grafContainer.style.display = "none";
+    Object.values(graficos).forEach(graf => graf.style.display = "none");
 
-        document.getElementById("grafPersona").style.display = "none";
-        document.getElementById("grafOficinas").style.display = "none";
-        document.getElementById("grafPersonasActuales").style.display = "none";
+    document.getElementById("grafico").addEventListener("change", function () {
+        const seleccion = this.value;
 
-    if(seleccion === "persona") {
-        document.getElementById("grafPersona").style.display = "block";
-    } else if (seleccion === "oficinas") {
-        document.getElementById("grafOficinas").style.display = "block";
-    } else if (seleccion === "actuales") {
-    document.getElementById("grafPersonasActuales").style.display = "block";
-    }
+        Object.values(graficos).forEach(graf => graf.style.display = "none");
 
+        if (seleccion && graficos[seleccion]) {
+            grafContainer.style.display = "block";
+            graficos[seleccion].style.display = "block";
+        } else {
+            grafContainer.style.display = "none";
+        }
+    });
 });
 
 function personaMayorIngresos(registros) {

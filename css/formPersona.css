@@ -1,28 +1,5 @@
-input#id {
-    background-color: var(--moraoOscurin);
-    color: var(--moraoClaro);
-    border: 1px solid var(--morao);
-}
-
-input#nombre {
-    background-color: var(--moraoOscurin);
-    color: var(--moraoClaro);
-    border: 1px solid var(--morao);
-}
-
-input#email {
-    background-color: var(--moraoOscurin);
-    color: var(--moraoClaro);
-    border: 1px solid var(--morao);
-}
-
-input#direccion {
-    background-color: var(--moraoOscurin);
-    color: var(--moraoClaro);
-    border: 1px solid var(--morao);
-}
-
-input#fechaNacimiento {
+input#id, input#nombre, input#email, input#direccion, input#fechaNacimiento, input#telefono, select#oficina,
+input#cargo, select#estado {
     background-color: var(--moraoOscurin);
     color: var(--moraoClaro);
     border: 1px solid var(--morao);
@@ -34,49 +11,27 @@ input#fechaNacimiento::-webkit-calendar-picker-indicator {
     cursor: pointer;
 }
 
-input#telefono {
-    background-color: var(--moraoOscurin);
-    color: var(--moraoClaro);
-    border: 1px solid var(--morao);
-}
-
-select#oficina {
-    background-color: var(--moraoOscurin);
-    color: var(--moraoClaro);
-    border: 1px solid var(--morao);
-}
-
-input#cargo {
-    background-color: var(--moraoOscurin);
-    color: var(--moraoClaro);
-    border: 1px solid var(--morao);
-}
-
-
 button#cancelar {
     background-color: var(--moraoOscurin1);
     color: var(--moraoClaro);
     box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
-
+    min-width: 100px;
+    height: 40px;
 }
 
 button#guardar {
     background-color: var(--moraoClaro);
     color: var(--moraoOscurin1);
     box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
+    min-width: 100px;
+    height: 40px;
 
 }
 
-button#cancelar:hover {
+button#cancelar:hover, button#guardar:hover {
     background-color: var(--moraoOscuro1);
     border: 1px solid var(--moraoOscuro1);
     color: var(--moraoClaro);
 
 }
-
-button#guardar:hover {
-    background-color: var(--moraoOscuro1);
-    border: 1px solid var(--moraoOscuro1);
-    color: var(--moraoClaro);
-
-}
+select

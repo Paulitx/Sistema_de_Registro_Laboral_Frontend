@@ -3,10 +3,11 @@
     padding: 20px;
     border-radius: 20px; /* Bordes redondeados */
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3); /* Sombra suave */
-    margin: 30px; /* Centra horizontalmente */
+    margin: 20px auto;
     text-align: start; /* Centra el contenido dentro del recuadro */
     flex-direction: column; /* Coloca los elementos de forma vertical (si es un formulario, por ejemplo) */
     display: flex;
+    width: 80%;
 }
 
 #grafPersona, #grafOficinas, #grafPersonasActuales {
@@ -14,4 +15,17 @@
     justify-content: center;
     margin: 70px ;
 
+}
+
+select#grafico {
+    width: 80%;
+    margin: 20px auto;
+    background-color: var(--moraoOscurin);
+    color: var(--moraoClaro);
+    border: 1px solid var(--morao);
+}
+
+select#grafico:hover {
+    background-color: var(--moraoOscuro1);
+    border: 1px solid var(--moraoOscuro1);
 }

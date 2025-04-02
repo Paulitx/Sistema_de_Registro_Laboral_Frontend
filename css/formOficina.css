@@ -1,22 +1,19 @@
 
-input#nombre {
+input#nombre, input#ubicacion, input#limitePersonas {
     background-color: var(--moraoOscurin);
     color: var(--moraoClaro);
     border: 1px solid var(--morao);
+    width: 100%;
 
 }
 
-input#ubicacion {
-    background-color: var(--moraoOscurin);
-    color: var(--moraoClaro);
-    border: 1px solid var(--morao);
-
-}
-
-input#limitePersonas {
-    background-color: var(--moraoOscurin);
-    color: var(--moraoClaro);
-    border: 1px solid var(--morao);
+button#btnMostrarMapa {
+    background-color: var(--moraoClaro);
+    color: var(--moraoOscurin1);
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
+    border-radius: 10px;
+    text-align: center;
+    width: 100%;
 
 }
 
@@ -24,6 +21,8 @@ button#guardar {
     background-color: var(--moraoClaro);
     color: var(--moraoOscurin1);
     box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
+    min-width: 100px;
+    height: 40px;
 
 }
 
@@ -31,19 +30,25 @@ button#cancelar {
     background-color: var(--moraoOscurin1);
     color: var(--moraoClaro);
     box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
+    min-width: 100px;
+    height: 40px;
 
 }
 
-button#guardar:hover {
+button#guardar:hover, button#cancelar:hover, button#btnMostrarMapa:hover {
     background-color: var(--moraoOscuro1);
     border: 1px solid var(--moraoOscuro1);
     color: var(--moraoClaro);
 
 }
 
-button#cancelar:hover {
-    background-color: var(--moraoOscuro1);
-    border: 1px solid var(--moraoOscuro1);
-    color: var(--moraoClaro);
+#mapaContainer {
+    display: none;
+    width: 100%;
+}
 
+#googleMap {
+    width: 100%;
+    height:400px; 
+    margin-top: 10px;
 }
