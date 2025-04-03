@@ -42,8 +42,8 @@ function verificarAutenticacion() {
     }
 
     let pathname = window.location.pathname.split("/").pop();
-    let restrictedForRegistrador = ["formRegistro.html", "indexRegistro.html", "NavBar.html"];
-    let allowedForVisor = ["indexPersona.html", "indexRegistro.html", "indexOficina.html", "reporte.html", "NavBar.html"];
+    let restrictedForRegistrador = ["formRegistro.html", "indexRegistro.html","NavBar.html"];
+    let allowedForVisor = ["indexPersona.html", "indexRegistro.html", "indexOficina.html", "reporte.html","NavBar.html"];
 
     if (role === "registrador" && !restrictedForRegistrador.includes(pathname)) {
         alert("No tienes acceso a esta página.");
