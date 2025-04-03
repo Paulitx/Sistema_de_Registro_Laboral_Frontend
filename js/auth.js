@@ -21,7 +21,7 @@ function login(event) {
     if (users[username] && users[username].password === password) {
         localStorage.setItem("auth", "true");
         localStorage.setItem("role", users[username].role);
-        window.location.href = "NavBar.html";
+        window.location.href = "principal.html";
     } else {
         alert("Usuario o contraseña incorrectos");
     }
@@ -42,18 +42,18 @@ function verificarAutenticacion() {
     }
 
     let pathname = window.location.pathname.split("/").pop();
-    let restrictedForRegistrador = ["formRegistro.html", "indexRegistro.html","NavBar.html"];
-    let allowedForVisor = ["indexPersona.html", "indexRegistro.html", "indexOficina.html", "reporte.html","NavBar.html"];
+    let restrictedForRegistrador = ["formRegistro.html", "indexRegistro.html","principal.html"];
+    let allowedForVisor = ["indexPersona.html", "indexRegistro.html", "indexOficina.html", "reporte.html","principal.html"];
 
     if (role === "registrador" && !restrictedForRegistrador.includes(pathname)) {
         alert("No tienes acceso a esta página.");
-        window.location.href = "NavBar.html";
+        window.location.href = "principal.html";
     }
 
     if (role === "visor") {
         if (!allowedForVisor.includes(pathname)) {
             alert("No tienes acceso a esta página");
-            window.location.href = "NavBar.html";
+            window.location.href = "principal.html";
         }
 
         //seshabilitar botones de agregar, editar y eliminar para el visor

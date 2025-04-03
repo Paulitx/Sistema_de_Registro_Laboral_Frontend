@@ -1,4 +1,3 @@
-
 :root{
     --moraoOscuro: #100e19;
     --moraoOscuro1: #3d3861;
@@ -21,13 +20,11 @@
 
 h1 {
     color: var(--moraoClaro);
-    /*font-family: "A little sunshine", monospace;*/
 
 }
 
 h2 {
     color: var(--moraoClaro);
-    /*font-family: "A little sunshine", monospace;*/
 
 }
 
@@ -43,6 +40,11 @@ body {
 
 .navbar-custom {
      background: linear-gradient(90deg, var(--morao), var(--rosao), var(--naranjita), var(--amarillin));
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 1000;
  }
 
 footer {

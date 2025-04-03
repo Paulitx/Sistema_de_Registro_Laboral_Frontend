@@ -206,44 +206,102 @@ document.addEventListener("DOMContentLoaded", function () {
     let atributoBusqueda = document.getElementById("atributoBusqueda");
     let inputBusqueda = document.getElementById("busqueda");
     let sugerenciasDiv = document.getElementById("sugerencias");
+    let personas = JSON.parse(localStorage.getItem("personas")) || [];
 
     inputBusqueda.addEventListener("input", function () {
         let valor = inputBusqueda.value.toLowerCase();
         let atributo = atributoBusqueda.value;
-        let personas = JSON.parse(localStorage.getItem("personas")) || [];
+        sugerenciasDiv.innerHTML = "";
 
         if (!atributo || valor.trim() === "") {
-            sugerenciasDiv.innerHTML = "";
+            mostrarPersonas(personas);
             return;
         }
 
         let resultados = personas.filter(persona => {
-            return persona[atributo] && persona[atributo].toLowerCase().includes(valor);
+            if (atributo === "oficina") {
+                return persona.oficina && persona.oficina.nombre.toLowerCase().includes(valor);
+            } else if (atributo === "estado") {
+                return persona.estado && persona.estado.toLowerCase().includes(valor);
+            } else if (atributo === "fechaNacimiento") {
+                return persona.fechaNacimiento && persona.fechaNacimiento.includes(valor);
+            } else if (atributo === "id") {
+                return persona.id && persona.id.toString().includes(valor);
+            } else {
+                return persona[atributo] && persona[atributo].toLowerCase().includes(valor);
+            }
         });
 
-        // Mostrar sugerencias
-        sugerenciasDiv.innerHTML = "";
-        resultados.forEach(persona => {
-            let elemento = document.createElement("a");
-            elemento.href = "#";
-            elemento.classList.add("list-group-item", "list-group-item-action");
-            elemento.textContent = persona[atributo];
-
-            elemento.addEventListener("click", function () {
-                inputBusqueda.value = persona[atributo];
-                sugerenciasDiv.innerHTML = "";
-                mostrarResultados(resultados);
-            });
-
-            sugerenciasDiv.appendChild(elemento);
-        });
-
-        // Si no hay coincidencias, mostrar sugerencias alternativas
         if (resultados.length === 0) {
             sugerenciasDiv.innerHTML = "<div class='list-group-item'>No se encontraron coincidencias</div>";
+        } else {
+            let valoresUnicos = new Set(resultados.map(persona => {
+                return atributo === "oficina" ? persona.oficina.nombre :
+                    atributo === "estado" ? persona.estado :
+                        atributo === "fechaNacimiento" ? persona.fechaNacimiento :
+                            atributo === "id" ? persona.id :
+                                persona[atributo];
+            }));
+
+            valoresUnicos.forEach(valorUnico => {
+                let elemento = document.createElement("a");
+                elemento.href = "#";
+                elemento.classList.add("list-group-item", "list-group-item-action");
+                elemento.textContent = valorUnico;
+
+                elemento.addEventListener("click", function () {
+                    inputBusqueda.value = valorUnico;
+                    sugerenciasDiv.innerHTML = "";
+
+                    let filtroFinal = personas.filter(persona => {
+                        if (atributo === "oficina") return persona.oficina.nombre === valorUnico;
+                        if (atributo === "estado") return persona.estado === valorUnico;
+                        if (atributo === "fechaNacimiento") return persona.fechaNacimiento === valorUnico;
+                        if (atributo === "id") return persona.id.toString() === valorUnico;
+                        return persona[atributo] === valorUnico;
+                    });
+
+                    mostrarPersonas(filtroFinal);
+                });
+
+                sugerenciasDiv.appendChild(elemento);
+            });
         }
+        mostrarPersonas(resultados);
     });
+
+    function mostrarPersonas(listaPersonas) {
+        let tbody = document.getElementById("personas-list");
+        tbody.innerHTML = "";
+
+        if (listaPersonas.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="9" class="text-white" style="background-color: #d895c6">No se encontraron resultados.</td></tr>`;
+            return;
+        }
+
+        listaPersonas.forEach((persona, index) => {
+            let fila = `<tr>
+                    <td>${persona.id}</td>
+                    <td>${persona.nombre}</td>
+                    <td>${persona.email}</td>
+                    <td>${persona.direccion}</td>
+                    <td>${persona.fechaNacimiento}</td>
+                    <td>${persona.oficina.nombre}</td>
+                    <td>${persona.telefono}</td>
+                    <td>${persona.cargo}</td>
+                    <td>${persona.estado}</td>
+                    <td>
+                        <button onclick="editarPersona(${index})" class="btn btn-editar"> 
+                            <i class="bi bi-pencil-square"></i> Editar</button>
+                        <button onclick="confirmarEliminacion(${index})" class="btn btn-eliminar"> 
+                            <i class="bi bi-trash-fill"></i> Eliminar</button>
+                    </td>
+                </tr>`;
+            tbody.innerHTML += fila;
+        });
+    }
 });
+
 
 // Función para mostrar resultados en la tabla
 function mostrarResultados(resultados) {
