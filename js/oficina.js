@@ -88,6 +88,7 @@ function confirmarEliminacion(index) {
     if (confirmacion) {
         eliminarOficina(index);
     }
+    alert("Se ha concretado la eliminacion de la oficina.");
 }
 
 function eliminarOficina(index) {
@@ -127,12 +128,15 @@ function guardarOficina(event) {
     if (index !== null && index !== "null") {
         oficinas[index] = oficina;  // Editar oficina existente
         localStorage.removeItem("editIndex");
+        alert("Se ha editado la oficina correctamente");
     } else {
-        oficinas.push(oficina);  // Agregar nueva oficina
+        oficinas.push(oficina); //Agregar nueva oficina
+        alert("Se ha guardado la oficina correctamente");
     }
 
     localStorage.setItem("oficinas", JSON.stringify(oficinas));
     window.location.href = "indexOficina.html";
+
 }
 
 // Example starter JavaScript for disabling form submissions if there are invalid fields

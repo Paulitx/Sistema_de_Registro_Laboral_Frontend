@@ -95,6 +95,7 @@ function confirmarEliminacion(index) {
     if (confirmacion) {
         eliminarRegistro(index);
     }
+    alert("Se ha concretado la eliminacion del registro.");
 }
 
 function eliminarRegistro(index) {
@@ -199,6 +200,7 @@ function guardarRegistro(event) {
         }
         registros[index] = registro;  //editar registro existente
         localStorage.removeItem("editIndex");
+        alert("Se ha editado el registro correctamente");
 
     } else {
         //Aqui se crea un nuevo registro
@@ -221,11 +223,13 @@ function guardarRegistro(event) {
             }
         }
         registros.push(registro);  //Agregar nuevo registro
+        alert("Se ha guardado el registro correctamente");
     }
 
     localStorage.setItem("registros", JSON.stringify(registros));
     localStorage.setItem("oficinas", JSON.stringify((oficinas)));
     window.location.href = "indexRegistro.html";
+
 }
 
 // Example starter JavaScript for disabling form submissions if there are invalid fields

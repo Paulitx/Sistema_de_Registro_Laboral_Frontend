@@ -94,6 +94,7 @@ function confirmarEliminacion(index) {
     if (confirmacion) {
         eliminarPersona(index);
     }
+    alert("Se ha concretado la eliminacion de al persona.");
 }
 
 function eliminarPersona(index) {
@@ -156,13 +157,15 @@ function guardarPersona(event) {
     let index = localStorage.getItem("editIndex");
     if (index !== null) {
         personas[index] = persona;
+        alert("Se ha editado la persona correctamente");
     } else {
         personas.push(persona);
+
+        alert("Se ha guardado la persona correctamente");
     }
 
     localStorage.setItem("personas", JSON.stringify(personas));
     window.location.href = "indexPersona.html";
-
 
 }
 
