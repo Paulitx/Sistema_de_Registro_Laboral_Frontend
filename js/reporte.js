@@ -28,7 +28,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 });
-
+//crea el grafico con la persona que ha ingresado mas a una oficina
 function personaMayorIngresos(registros) {
     const mayorPersona = {};
     registros.forEach(r => {
@@ -38,7 +38,7 @@ function personaMayorIngresos(registros) {
     });
     return mayorPersona;
 }
-
+//Muestra las ofciinas con mayor cantidad de personas dentro
 function ocupacionMaxOficina(registros) {
     const mayorOficina = {};
     registros.forEach(r => {
@@ -49,7 +49,7 @@ function ocupacionMaxOficina(registros) {
     });
     return mayorOficina;
 }
-
+//carga la catidad de personas las cuales se encuentran actualmenete en una oficina
 function personasEnOficina(registros) {
     const personaActual = {};
     registros.forEach(r => {

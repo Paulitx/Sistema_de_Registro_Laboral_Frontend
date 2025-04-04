@@ -11,7 +11,7 @@ function login(event) {
     let username = document.getElementById("username").value;
     let password = document.getElementById("password").value;
 
-    // Credenciales con roles
+    //credenciales con roles
     const users = {
         "admin": { password: "1234", role: "admin" },
         "registrador": { password: "5678", role: "registrador" },
@@ -26,13 +26,13 @@ function login(event) {
         alert("Usuario o contraseña incorrectos");
     }
 }
-
+//cerrado de sesion
 function logout() {
     localStorage.removeItem("auth");
     localStorage.removeItem("role");
     window.location.href = "login.html";
 }
-
+//Verficia que el usuario sea, visor, administrador o registrador
 function verificarAutenticacion() {
     let auth = localStorage.getItem("auth");
     let role = localStorage.getItem("role");
@@ -42,21 +42,22 @@ function verificarAutenticacion() {
     }
 
     let pathname = window.location.pathname.split("/").pop();
-    let restrictedForRegistrador = ["formRegistro.html", "indexRegistro.html","principal.html"];
-    let allowedForVisor = ["indexPersona.html", "indexRegistro.html", "indexOficina.html", "reporte.html","principal.html"];
+    let restrictedForRegistrador = ["formRegistro.html", "indexRegistro.html","principal.html"];//le da acceso al registrador a ciertas paginas
+    let allowedForVisor = ["indexPersona.html", "indexRegistro.html", "indexOficina.html", "reporte.html","principal.html"];//le da acceso al visor a ciertas paginas
 
+    //Avisa al usuario registrador que no tiene permisos
     if (role === "registrador" && !restrictedForRegistrador.includes(pathname)) {
         alert(`No tienes acceso a esta página por ser ${role}.`);
         window.location.href = "principal.html";
     }
-
+    //Avisa al usuario visor que no tiene permisos
     if (role === "visor") {
         if (!allowedForVisor.includes(pathname)) {
             alert(`No tienes acceso a esta página por ser ${role}`);
             window.location.href = "principal.html";
         }
 
-        //seshabilitar botones de agregar, editar y eliminar para el visor
+        //deshabilitar botones de agregar, editar y eliminar para el visor
         document.addEventListener("DOMContentLoaded", () => {
             let agregarBtn = document.getElementById("agregar");
             if (agregarBtn) agregarBtn.style.display = "none";
@@ -93,7 +94,7 @@ function verificarAutenticacion() {
             }, false)
         })
 })()
-
+//oculta o muestra la contraseña
 function mostrarPassword() {
     var passwordInput = document.getElementById("password");
     var eyeIcon = document.getElementById("eyeIcon");

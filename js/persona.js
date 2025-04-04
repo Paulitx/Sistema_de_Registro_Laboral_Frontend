@@ -39,7 +39,7 @@ function cargarPersonas() {
     mostrarPaginacion(totalPaginas);
 }
 
-// Mostrar los controles de paginación
+//muestra los controles de la paginacion
 function mostrarPaginacion(totalPaginas) {
     let paginacionDiv = document.getElementById("paginacion");
     paginacionDiv.innerHTML = "";
@@ -56,7 +56,7 @@ function mostrarPaginacion(totalPaginas) {
         paginacionDiv.appendChild(btnAnterior);
     }
 
-    // Mostrar números de página
+    //Muestra los numeros de pagina
     for (let i = 1; i <= totalPaginas; i++) {
         let btnPagina = document.createElement("button");
         btnPagina.textContent = i;
@@ -71,7 +71,7 @@ function mostrarPaginacion(totalPaginas) {
         paginacionDiv.appendChild(btnPagina);
     }
 
-    // Botón "Siguiente"
+    //Programaicon del boton siguinete
     if (paginaActual < totalPaginas) {
         let btnSiguiente = document.createElement("button");
         btnSiguiente.textContent = "Siguiente";
@@ -84,7 +84,7 @@ function mostrarPaginacion(totalPaginas) {
     }
 }
 
-
+//Alerta que avisa si realmente se quiere eliminar una persona
 function confirmarEliminacion(index) {
     if (localStorage.getItem("role") === "visor") {
         alert("No tienes permisos para eliminar.");
@@ -97,19 +97,19 @@ function confirmarEliminacion(index) {
         alert("Se ha concretado la eliminacion de al persona.");
     }
 }
-
+//elimina una persona
 function eliminarPersona(index) {
     let personas = JSON.parse(localStorage.getItem("personas")) || [];
     personas.splice(index, 1);
     localStorage.setItem("personas", JSON.stringify(personas));
     cargarPersonas();
 }
-
+//edita una persona enviandola al form de persona
 function editarPersona(index) {
     localStorage.setItem("editIndex", index);
     window.location.href = "formPersona.html";
 }
-
+//guarda las personas
 function guardarPersona(event) {
 
     event.preventDefault();
@@ -122,7 +122,7 @@ function guardarPersona(event) {
 
     let oficinas = JSON.parse(localStorage.getItem("oficinas")) || [];
     let personasGuardada = JSON.parse(localStorage.getItem("personas")) || [];
-
+    //datos de persona
     let id = document.getElementById("id").value;
     let nombre = document.getElementById("nombre").value;
     let email = document.getElementById("email").value;
@@ -156,7 +156,7 @@ function guardarPersona(event) {
 
         alert("Se ha guardado la persona correctamente");
     }
-
+//guarda a la persona y la envia al indexPersona
     localStorage.setItem("personas", JSON.stringify(personas));
     window.location.href = "indexPersona.html";
 
@@ -182,7 +182,7 @@ function guardarPersona(event) {
             }, false)
         })
 })()
-
+//carga la oficina asociada a la persona
 function cargarOficinas() {
     const oficinas = JSON.parse(localStorage.getItem("oficinas")) || [];
     const selectOficina = document.getElementById("oficina");
@@ -190,7 +190,7 @@ function cargarOficinas() {
 
     oficinas.forEach((oficina, index) => {
         const option = document.createElement("option");
-        option.value = index; // Usamos el índice como valor
+        option.value = index;
         option.textContent = oficina.nombre;
         selectOficina.appendChild(option);
     });
@@ -202,12 +202,12 @@ document.addEventListener("DOMContentLoaded", function () {
 
     oficinas.forEach((oficina, index) => {
         let option = document.createElement("option");
-        option.value = index; // Guardamos el índice de la oficina
+        option.value = index;
         option.textContent = oficina.nombre;
         selectOficina.appendChild(option);
     });
 });
-
+//Permite la busqueda mediante el filtrado de los datos de la persona
 document.addEventListener("DOMContentLoaded", function () {
     let atributoBusqueda = document.getElementById("atributoBusqueda");
     let inputBusqueda = document.getElementById("busqueda");
@@ -275,7 +275,7 @@ document.addEventListener("DOMContentLoaded", function () {
         }
         mostrarPersonas(resultados);
     });
-
+    //Muestra las personas filtradas
     function mostrarPersonas(listaPersonas) {
         let tbody = document.getElementById("personas-list");
         tbody.innerHTML = "";
@@ -349,7 +349,7 @@ document.addEventListener("DOMContentLoaded", function() {
         iconoEstado.classList.add("text-success");
     }
 });
-
+//Esporta a excel los datos de la tabla
 function exportarExcel(){
     let personas = JSON.parse(localStorage.getItem("personas")) || [];
     if(personas.length === 0){
@@ -379,7 +379,7 @@ function exportarExcel(){
 
     XLSX.writeFile(wb, "personas.xlsx");
 }
-
+//Exporta a PDF los datos de la tabla
 function exportarPDF(){
     let personas = JSON.parse(localStorage.getItem("personas")) || [];
     if(personas.length === 0){

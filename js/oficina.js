@@ -1,6 +1,6 @@
 let paginaActual = 1;
 const registrosPorPagina = 5;
-
+//muestra las oficinas en el indexOficina
 function cargarOficinas() {
     let oficinas = JSON.parse(localStorage.getItem("oficinas")) || [];
     let tbody = document.getElementById("oficinas-list");
@@ -33,7 +33,7 @@ function cargarOficinas() {
     mostrarPaginacion(totalPaginas);
 }
 
-// Mostrar los controles de paginación
+// Muestra los controles de paginación
 function mostrarPaginacion(totalPaginas) {
     let paginacionDiv = document.getElementById("paginacion");
     paginacionDiv.innerHTML = "";
@@ -50,7 +50,7 @@ function mostrarPaginacion(totalPaginas) {
         paginacionDiv.appendChild(btnAnterior);
     }
 
-    // Mostrar números de página
+    //Muestra numeros de pagina
     for (let i = 1; i <= totalPaginas; i++) {
         let btnPagina = document.createElement("button");
         btnPagina.textContent = i;
@@ -65,7 +65,7 @@ function mostrarPaginacion(totalPaginas) {
         paginacionDiv.appendChild(btnPagina);
     }
 
-    // Botón "Siguiente"
+    //Boton siguiente
     if (paginaActual < totalPaginas) {
         let btnSiguiente = document.createElement("button");
         btnSiguiente.textContent = "Siguiente";
@@ -77,7 +77,7 @@ function mostrarPaginacion(totalPaginas) {
         paginacionDiv.appendChild(btnSiguiente);
     }
 }
-
+//confirma la eliminaciond de una oficina
 function confirmarEliminacion(index) {
     if (localStorage.getItem("role") === "visor") {
         alert(`No tienes permisos para eliminar.`);
@@ -90,19 +90,19 @@ function confirmarEliminacion(index) {
         alert("Se ha concretado la eliminacion de la oficina.");
     }
 }
-
+//elimina una oficina
 function eliminarOficina(index) {
     let oficinas = JSON.parse(localStorage.getItem("oficinas")) || [];
     oficinas.splice(index, 1);
     localStorage.setItem("oficinas", JSON.stringify(oficinas));
     cargarOficinas();
 }
-
+//edita una oficina
 function editarOficina(index) {
     localStorage.setItem("editIndex", index);
     window.location.href = "formOficina.html";
 }
-
+//guarda una oficina
 function guardarOficina(event) {
     event.preventDefault();
     let form = event.target;
@@ -126,14 +126,14 @@ function guardarOficina(event) {
 
     let index = localStorage.getItem("editIndex");
     if (index !== null && index !== "null") {
-        oficinas[index] = oficina;  // Editar oficina existente
+        oficinas[index] = oficina;  //Editar oficina existente
         localStorage.removeItem("editIndex");
         alert("Se ha editado la oficina correctamente");
     } else {
         oficinas.push(oficina); //Agregar nueva oficina
         alert("Se ha guardado la oficina correctamente");
     }
-
+    //guarda la oficina en el local storage
     localStorage.setItem("oficinas", JSON.stringify(oficinas));
     window.location.href = "indexOficina.html";
 
@@ -159,7 +159,7 @@ function guardarOficina(event) {
             }, false)
         })
 })()
-
+//Funcion para crear el mapa y mostrarlo
 window.onload = function(){
     let mapa;
     let mapaCargado = false;

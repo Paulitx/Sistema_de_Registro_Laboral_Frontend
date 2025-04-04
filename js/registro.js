@@ -1,6 +1,6 @@
 let paginaActual = 1;
 const registrosPorPagina = 5;
-
+//Lista las personas con registros
 function cargarRegistros() {
     let registros = JSON.parse(localStorage.getItem("registros")) || [];
     let tbody = document.getElementById("registros-list");
@@ -14,7 +14,7 @@ function cargarRegistros() {
         return;
     }
 
-    // Determinar los registros a mostrar según la página actual
+    //determinar los registros a mostrar según la página actual
     let registrosPagina = registros.slice((paginaActual - 1) * registrosPorPagina, paginaActual * registrosPorPagina);
 
     // Agregar los registros de la página actual al tbody
@@ -35,16 +35,16 @@ function cargarRegistros() {
         tbody.innerHTML += fila;
     });
 
-    // Mostrar los controles de paginación
+    //Muestra los controles de paginación
     mostrarPaginacion(totalPaginas);
 }
 
-// Mostrar los controles de paginación
+//Muestra los controles de paginación
 function mostrarPaginacion(totalPaginas) {
     let paginacionDiv = document.getElementById("paginacion");
     paginacionDiv.innerHTML = "";
 
-    // Botón "Anterior"
+    //boton Anterior
     if (paginaActual > 1) {
         let btnAnterior = document.createElement("button");
         btnAnterior.textContent = "Anterior";
@@ -56,7 +56,7 @@ function mostrarPaginacion(totalPaginas) {
         paginacionDiv.appendChild(btnAnterior);
     }
 
-    // Mostrar números de página
+    //muestra numeros de página
     for (let i = 1; i <= totalPaginas; i++) {
         let btnPagina = document.createElement("button");
         btnPagina.textContent = i;
@@ -71,7 +71,7 @@ function mostrarPaginacion(totalPaginas) {
         paginacionDiv.appendChild(btnPagina);
     }
 
-    // Botón "Siguiente"
+    //botón Siguiente
     if (paginaActual < totalPaginas) {
         let btnSiguiente = document.createElement("button");
         btnSiguiente.textContent = "Siguiente";
@@ -83,7 +83,7 @@ function mostrarPaginacion(totalPaginas) {
         paginacionDiv.appendChild(btnSiguiente);
     }
 }
-
+//Confirma la eliminacion del registro
 function confirmarEliminacion(index) {
 
     if (localStorage.getItem("role") === "visor") {
@@ -97,7 +97,7 @@ function confirmarEliminacion(index) {
         alert("Se ha concretado la eliminacion del registro.");
     }
 }
-
+//eñlimina un registro
 function eliminarRegistro(index) {
     let registros = JSON.parse(localStorage.getItem("registros")) || [];
     let oficinas = JSON.parse(localStorage.getItem("oficinas")) || [];
@@ -132,12 +132,12 @@ function eliminarRegistro(index) {
     localStorage.setItem("oficinas", JSON.stringify(oficinas));
     cargarRegistros();
 }
-
+//edita el registro
 function editarRegistro(index) {
     localStorage.setItem("editIndex", index);
     window.location.href = "formRegistro.html";
 }
-
+//guarda un registro
 function guardarRegistro(event) {
     event.preventDefault();
 
@@ -225,7 +225,7 @@ function guardarRegistro(event) {
         registros.push(registro);  //Agregar nuevo registro
         alert("Se ha guardado el registro correctamente");
     }
-
+//guarda los registros en el localstorage
     localStorage.setItem("registros", JSON.stringify(registros));
     localStorage.setItem("oficinas", JSON.stringify((oficinas)));
     window.location.href = "indexRegistro.html";
@@ -252,7 +252,7 @@ function guardarRegistro(event) {
             }, false)
         })
 })()
-
+//carga las personas que se encuentran activas en el form
 function cargarPersonas() {
     let personas = JSON.parse(localStorage.getItem("personas")) || [];
     let selectPersona = document.getElementById("persona");
@@ -270,12 +270,12 @@ function cargarPersonas() {
     });
 }
 
-// Llamar a cargarPersonas() cuando cargue la página
+//llama a cargarPersonas cuando cargue la página
 document.addEventListener("DOMContentLoaded", cargarPersonas);
 document.addEventListener("DOMContentLoaded", cargarRegistros);
 
 
-
+//exporta los datos a excel
 function exportarExcel(){
     let registros = JSON.parse(localStorage.getItem("registros")) || [];
     if(registros.length === 0){
@@ -296,7 +296,7 @@ function exportarExcel(){
 
     XLSX.writeFile(wb, "registros.xlsx");
 }
-
+//exporta los datos a pdf
 function exportarPDF(){
     let registros = JSON.parse(localStorage.getItem("registros")) || [];
     if(registros.length === 0){
