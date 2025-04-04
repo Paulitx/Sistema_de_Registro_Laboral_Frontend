@@ -142,14 +142,6 @@ function guardarPersona(event) {
         return;
     }
 
-    //contar cuántas personas estan en la misma oficina
-    let personasEnOficina = personasGuardada.filter(p => p.oficina.nombre === oficina.nombre).length;
-
-    if (personasEnOficina >= oficina.limitePersonas) {
-        alert(`No se puede asignar más personas a la oficina ${oficina.nombre}. Límite alcanzado.`);
-        return;
-    }
-
     //guardar persona luego de validar
     let persona = { id, nombre, email, direccion, fechaNacimiento, oficina, telefono, cargo, estado };
     let personas = JSON.parse(localStorage.getItem("personas")) || [];

@@ -95,37 +95,37 @@
       <div class="col-md-6">
         <label for="id">Id</label>
         <input id="id" class="form-control" required/>
-        <div class="invalid-feedback">El espacio Id es obligatorio.</div>
+        <div class="invalid-feedback">Debe ingresar un id válido.</div>
       </div>
 
       <div class="col-md-6">
         <label for="nombre">Nombre</label>
         <input id="nombre" class="form-control" required/>
-        <div class="invalid-feedback">El espacio Nombre es obligatorio.</div>
+        <div class="invalid-feedback">Debe ingresar un nombre.</div>
       </div>
 
       <div class="col-md-6">
         <label for="email">Correo</label>
         <input type=email id="email" class="form-control" required/>
-        <div class="invalid-feedback">El espacio Correo es obligatorio.</div>
+        <div class="invalid-feedback">Debe ingresar un correo.</div>
       </div>
 
       <div class="col-md-6">
         <label for="direccion">Dirección</label>
         <input id="direccion" class="form-control" required>
-        <div class="invalid-feedback">El espacio Dirección es obligatorio.</div>
+        <div class="invalid-feedback">Debe ingresar una dirección.</div>
       </div>
 
       <div class="col-md-6">
         <label for="fechaNacimiento">Fecha de Nacimiento</label>
         <input type="date" id="fechaNacimiento" class="form-control" required/>
-        <div class="invalid-feedback">El espacio Fecha de Nacimiento es obligatorio.</div>
+        <div class="invalid-feedback">Debe de ingresar fecha de nacimiento.</div>
       </div>
 
       <div class="col-md-6">
         <label for="oficina">Oficina</label>
         <select id="oficina" class="form-control" required>
-          <option value="">Seleccione una oficina</option>
+          <option value="" selected disabled>Seleccione una oficina</option>
         </select>
         <div class="invalid-feedback">Debe seleccionar una oficina.</div>
       </div>
@@ -133,27 +133,23 @@
       <div class="col-md-6">
         <label for="telefono">Teléfono</label>
         <input id="telefono" class="form-control" required>
-        <div class="invalid-feedback">
-          El campo Teléfono es obligatorio.
-        </div>
+        <div class="invalid-feedback">Debe de ingresar un numero de teléfono.</div>
       </div>
 
       <div class="col-md-6">
         <label for="cargo">Cargo</label>
         <input id="cargo" class="form-control" required>
-        <div class="invalid-feedback">
-          El campo Cargo es obligatorio.
-        </div>
+        <div class="invalid-feedback">Debe ingresar un cargo</div>
       </div>
+
       <div class="col-md-6">
         <label for="estado">Estado</label>
         <select id="estado" class="form-control" required>
+          <option value="" selected disabled>Seleccione una un estado</option>
           <option value="activo">Activo</option>
           <option value="inactivo">Inactivo</option>
         </select>
-        <div class="invalid-feedback">
-          Debe seleccionar un estado.
-        </div>
+        <div class="invalid-feedback">Debe seleccionar un estado.</div>
       </div>
 
       <div class="col-md-12 text-end mt-4">

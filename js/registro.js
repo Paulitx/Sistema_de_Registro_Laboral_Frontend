@@ -83,7 +83,6 @@ function mostrarPaginacion(totalPaginas) {
     }
 }
 
-
 function confirmarEliminacion(index) {
 
     if (localStorage.getItem("role") === "visor") {
