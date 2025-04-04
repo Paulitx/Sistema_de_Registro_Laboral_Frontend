@@ -46,13 +46,13 @@ function verificarAutenticacion() {
     let allowedForVisor = ["indexPersona.html", "indexRegistro.html", "indexOficina.html", "reporte.html","principal.html"];
 
     if (role === "registrador" && !restrictedForRegistrador.includes(pathname)) {
-        alert("No tienes acceso a esta página.");
+        alert(`No tienes acceso a esta página por ser ${role}.`);
         window.location.href = "principal.html";
     }
 
     if (role === "visor") {
         if (!allowedForVisor.includes(pathname)) {
-            alert("No tienes acceso a esta página");
+            alert(`No tienes acceso a esta página por ser ${role}`);
             window.location.href = "principal.html";
         }
 
@@ -68,7 +68,7 @@ function verificarAutenticacion() {
             eliminarBtns.forEach(btn => btn.style.display = "none");
         });
         window.confirmarEliminacion = function(index) {
-            alert("No tienes permisos para eliminar elementos.");
+            alert(`No tienes permisos para eliminar elementos por ser ${role}.`);
         };
     }
 }

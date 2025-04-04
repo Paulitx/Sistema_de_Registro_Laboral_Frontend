@@ -16,15 +16,15 @@ function cargarOficinas() {
     let oficinasPagina = oficinas.slice((paginaActual - 1) * registrosPorPagina, paginaActual * registrosPorPagina);
     oficinasPagina.forEach((oficina, index) => {
 
-
+        const indiceReal = (paginaActual - 1) * registrosPorPagina + index;
         let fila = `<tr>
                     <td>${oficina.nombre}</td>
                     <td>${oficina.ubicacion}</td>
                     <td>${oficina.limitePersonas}</td>
                     <td>
-                        <button onclick="editarOficina(${index})" class="btn btn-editar"> 
+                        <button onclick="editarOficina(${indiceReal})" class="btn btn-editar"> 
                             <i class="bi bi-pencil-square"></i> Editar</button>
-                        <button onclick="confirmarEliminacion(${index})" class="btn btn-eliminar"> 
+                        <button onclick="confirmarEliminacion(${indiceReal})" class="btn btn-eliminar"> 
                             <i class="bi bi-trash-fill"></i> Eliminar</button>
                     </td>
                 </tr>`;
@@ -80,15 +80,15 @@ function mostrarPaginacion(totalPaginas) {
 
 function confirmarEliminacion(index) {
     if (localStorage.getItem("role") === "visor") {
-        alert("No tienes permisos para eliminar.");
+        alert(`No tienes permisos para eliminar.`);
         return;  //Si es visor, no hace nada
     }
 
     const confirmacion = confirm("¿Desea eliminar esta oficina?");
     if (confirmacion) {
         eliminarOficina(index);
+        alert("Se ha concretado la eliminacion de la oficina.");
     }
-    alert("Se ha concretado la eliminacion de la oficina.");
 }
 
 function eliminarOficina(index) {

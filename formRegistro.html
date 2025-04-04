@@ -20,15 +20,19 @@
     <script src="js/registro.js"></script>
     <script>
         document.addEventListener("DOMContentLoaded", function () {
+            cargarPersonas();
+
             let index = localStorage.getItem("editIndex");
             if(index !== null) {
                 let registros = JSON.parse(localStorage.getItem("registros")) || [];
                 let registro = registros[index];
-                document.getElementById("persona").value = registro.persona.nombre;
+
+                document.getElementById("persona").value = registro.persona.id;
                 document.getElementById("fechaHora").value = registro.fechaHora;
                 document.getElementById("tipo").value = registro.tipoRegistro;
             }
         });
+
     </script>
 </head>
 
@@ -90,7 +94,6 @@
             <div class="col-md-12 mt-2">
                 <label for="persona">Persona</label>
                 <select id="persona" class="form-control" required>
-                    <option value="" selected disabled>Seleccione una persona</option>
                 </select>
                 <div class="invalid-feedback">Debe seleccionar una persona.</div>
             </div>

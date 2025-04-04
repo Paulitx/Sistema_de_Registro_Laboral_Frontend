@@ -19,15 +19,16 @@ function cargarRegistros() {
 
     // Agregar los registros de la página actual al tbody
     registrosPagina.forEach((registro, index) => {
+        const indiceReal = (paginaActual - 1) * registrosPorPagina + index;
         let personaNombre = registro.persona ? registro.persona.nombre : "Desconocido";
         let fila = `<tr>
                     <td>${personaNombre}</td>
                     <td>${registro.tipoRegistro}</td>
                     <td>${registro.fechaHora}</td>
                     <td>
-                        <button onclick="editarRegistro(${index})" class="btn btn-editar"> 
+                        <button onclick="editarRegistro(${indiceReal})" class="btn btn-editar"> 
                             <i class="bi bi-pencil-square"></i> Editar</button>
-                        <button onclick="confirmarEliminacion(${index})" class="btn btn-eliminar"> 
+                        <button onclick="confirmarEliminacion(${indiceReal})" class="btn btn-eliminar"> 
                             <i class="bi bi-trash-fill"></i> Eliminar</button>
                     </td>
                 </tr>`;
@@ -93,8 +94,8 @@ function confirmarEliminacion(index) {
     const confirmacion = confirm("¿Desea eliminar este registro?");
     if (confirmacion) {
         eliminarRegistro(index);
+        alert("Se ha concretado la eliminacion del registro.");
     }
-    alert("Se ha concretado la eliminacion del registro.");
 }
 
 function eliminarRegistro(index) {
@@ -251,13 +252,14 @@ function guardarRegistro(event) {
             }, false)
         })
 })()
+
 function cargarPersonas() {
     let personas = JSON.parse(localStorage.getItem("personas")) || [];
     let selectPersona = document.getElementById("persona");
 
     if (!selectPersona) return;  // Evita errores si el select no existe
 
-    selectPersona.innerHTML = "";
+    selectPersona.innerHTML = '<option value="" selected disabled>Seleccione una persona</option>';
     personas
         .filter(persona => persona.estado === "activo")
         .forEach(persona => {

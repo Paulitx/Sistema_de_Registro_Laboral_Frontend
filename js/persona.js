@@ -16,6 +16,7 @@ function cargarPersonas() {
 
     let personaPagina = personas.slice((paginaActual - 1) * registrosPorPagina, paginaActual * registrosPorPagina);
     personaPagina.forEach((persona, index) => {
+        const indiceReal = (paginaActual - 1) * registrosPorPagina + index;
         let fila = `<tr>
                     <td>${persona.id}</td>
                     <td>${persona.nombre}</td>
@@ -27,9 +28,9 @@ function cargarPersonas() {
                     <td>${persona.cargo}</td>
                     <td>${persona.estado}</td>
                     <td>
-                        <button onclick="editarPersona(${index})" class="btn btn-editar"> 
+                        <button onclick="editarPersona(${indiceReal})" class="btn btn-editar"> 
                             <i class="bi bi-pencil-square"></i> Editar</button>
-                        <button onclick="confirmarEliminacion(${index})" class="btn btn-eliminar"> 
+                        <button onclick="confirmarEliminacion(${indiceReal})" class="btn btn-eliminar"> 
                             <i class="bi bi-trash-fill"></i> Eliminar</button>
                     </td>
                 </tr>`;
@@ -93,8 +94,8 @@ function confirmarEliminacion(index) {
     const confirmacion = confirm("¿Desea eliminar esta persona?");
     if (confirmacion) {
         eliminarPersona(index);
+        alert("Se ha concretado la eliminacion de al persona.");
     }
-    alert("Se ha concretado la eliminacion de al persona.");
 }
 
 function eliminarPersona(index) {
@@ -181,6 +182,19 @@ function guardarPersona(event) {
             }, false)
         })
 })()
+
+function cargarOficinas() {
+    const oficinas = JSON.parse(localStorage.getItem("oficinas")) || [];
+    const selectOficina = document.getElementById("oficina");
+    selectOficina.innerHTML = '<option value="" selected disabled>Seleccione una oficina</option>';
+
+    oficinas.forEach((oficina, index) => {
+        const option = document.createElement("option");
+        option.value = index; // Usamos el índice como valor
+        option.textContent = oficina.nombre;
+        selectOficina.appendChild(option);
+    });
+}
 
 document.addEventListener("DOMContentLoaded", function () {
     let oficinas = JSON.parse(localStorage.getItem("oficinas")) || [];
