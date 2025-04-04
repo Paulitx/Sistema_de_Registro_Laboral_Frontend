@@ -18,6 +18,18 @@
     <script>verificarAutenticacion();</script>
 
     <script src="js/registro.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            let index = localStorage.getItem("editIndex");
+            if(index !== null) {
+                let registros = JSON.parse(localStorage.getItem("registros")) || [];
+                let registro = registros[index];
+                document.getElementById("persona").value = registro.persona.nombre;
+                document.getElementById("fechaHora").value = registro.fechaHora;
+                document.getElementById("tipo").value = registro.tipoRegistro;
+            }
+        });
+    </script>
 </head>
 <body>
 <nav class="navbar navbar-expand-lg navbar-custom">
@@ -71,8 +83,9 @@
 
 <div class="container">
     <form class="form-container needs-validation w-75 h-auto" novalidate onsubmit="guardarRegistro(event)">
-        <h2 class="mt-1">Registrar Entrada/Salida</h2>
+        <h2 class="mt-1">Agregar Registro</h2>
         <div class="row mb-3">
+
             <div class="col-md-12 mt-2">
                 <label for="persona">Persona</label>
                 <select id="persona" class="form-control" required>
@@ -80,11 +93,13 @@
                 </select>
                 <div class="invalid-feedback">Debe seleccionar una persona.</div>
             </div>
+
             <div class="col-md-6 mt-2">
                 <label for="fechaHora">Fecha y Hora</label>
-                <input type="datetime-local" id="fechaHora" class="form-control" required>
+                <input type="datetime-local" id="fechaHora" class="form-control" required/>
                 <div class="invalid-feedback">Debe ingresar fecha y hora.</div>
             </div>
+
             <div class="col-md-6 mt-2">
                 <label for="tipo">Tipo</label>
                 <select id="tipo" class="form-control" required>

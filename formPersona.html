@@ -29,7 +29,10 @@
         document.getElementById("email").value = persona.email;
         document.getElementById("direccion").value = persona.direccion;
         document.getElementById("fechaNacimiento").value = persona.fechaNacimiento;
-
+        document.getElementById("oficina").value = persona.oficina.nombre;
+        document.getElementById("telefono").value = persona.telefono;
+        document.getElementById("cargo").value = persona.cargo;
+        document.getElementById("estado").value = persona.estado;
       }
     });
   </script>
@@ -124,9 +127,7 @@
         <select id="oficina" class="form-control" required>
           <option value="">Seleccione una oficina</option>
         </select>
-        <div class="invalid-feedback">
-          Debe seleccionar una oficina.
-        </div>
+        <div class="invalid-feedback">Debe seleccionar una oficina.</div>
       </div>
 
       <div class="col-md-6">
