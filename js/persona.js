@@ -208,6 +208,53 @@ async function guardarPersona(event) {
         }
     }
 }
+/////
+async function cargarOficinasParaSelect(idOficinaSeleccionada = null) {
+    const token = localStorage.getItem("jwtToken");
+    try {
+        const respuesta = await fetch('http://127.0.0.1:8080/api/oficina', {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+
+        if (!respuesta.ok) throw new Error(`HTTP ${respuesta.status}`);
+
+        const oficinas = await respuesta.json();
+
+        const select = document.getElementById("oficina");
+        select.innerHTML = '<option value="">Selecciona una oficina</option>';
+
+        oficinas.forEach(oficina => {
+            const option = document.createElement("option");
+            option.value = oficina.id;
+            option.textContent = oficina.nombre;
+            if (idOficinaSeleccionada && oficina.id === idOficinaSeleccionada) {
+                option.selected = true;
+            }
+            select.appendChild(option);
+        });
+    } catch (error) {
+        console.error('Error al cargar oficinas:', error);
+        alert('No se pudieron cargar las oficinas.');
+    }
+}
+
+document.addEventListener("DOMContentLoaded", function () {
+    let oficinas = JSON.parse(localStorage.getItem("oficinas")) || [];
+    let selectOficina = document.getElementById("oficina");
+
+    oficinas.forEach((oficina, index) => {
+        let option = document.createElement("option");
+        option.value = index; // Guardamos el índice de la oficina
+        option.textContent = oficina.nombre;
+        selectOficina.appendChild(option);
+    });
+});
+
+
+
+
+
+
 async function buscarPersonasFiltrado() {
     const token = localStorage.getItem("jwtToken");
     if (!token) {
