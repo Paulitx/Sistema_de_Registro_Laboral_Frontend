@@ -115,7 +115,6 @@ async function eliminarOficina(id) {
     }
 }
 
-
 function editarOficina(id) {
     localStorage.setItem("editIndex", id);
     window.location.href = "formOficina.html";
@@ -433,3 +432,4 @@ document.addEventListener("DOMContentLoaded", () => {
         buscarOficinasFiltrado();
     });
 });
+

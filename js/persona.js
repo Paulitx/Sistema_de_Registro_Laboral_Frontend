@@ -208,7 +208,7 @@ async function guardarPersona(event) {
         }
     }
 }
-/////
+
 async function cargarOficinasParaSelect(idOficinaSeleccionada = null) {
     const token = localStorage.getItem("jwtToken");
     try {
@@ -238,22 +238,60 @@ async function cargarOficinasParaSelect(idOficinaSeleccionada = null) {
     }
 }
 
-document.addEventListener("DOMContentLoaded", function () {
-    let oficinas = JSON.parse(localStorage.getItem("oficinas")) || [];
-    let selectOficina = document.getElementById("oficina");
+// Función para descargar el archivo PDF
+async function exportarPDF() {
+    const token = localStorage.getItem("jwtToken");
+    fetch('http://localhost:8080/api/persona/exportar/pdf', {
+        method: 'GET',
+        headers: {
+            'Authorization': `Bearer ${token}`
+        }
+    })
+        .then(response => {
+            if (response.ok) {
+                return response.blob(); // Convertir la respuesta en un Blob
+            } else {
+                throw new Error('No se pudo exportar el archivo PDF.');
+            }
+        })
+        .then(blob => {
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'personas.pdf'; // Nombre del archivo descargado
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+        })
+        .catch(error => console.error('Error al exportar PDF:', error));
+}
 
-    oficinas.forEach((oficina, index) => {
-        let option = document.createElement("option");
-        option.value = index; // Guardamos el índice de la oficina
-        option.textContent = oficina.nombre;
-        selectOficina.appendChild(option);
-    });
-});
-
-
-
-
-
+async function exportarExcel() {
+    const token = localStorage.getItem("jwtToken");
+    fetch('http://localhost:8080/api/persona/exportar/excel', {
+        method: 'GET',
+        headers: {
+            'Authorization': `Bearer ${token}`
+        }
+    })
+        .then(response => {
+            if (response.ok) {
+                return response.blob(); // Convertir la respuesta en un Blob
+            } else {
+                throw new Error('No se pudo exportar el archivo Excel.');
+            }
+        })
+        .then(blob => {
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'personas.xlsx'; // Nombre del archivo descargado
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+        })
+        .catch(error => console.error('Error al exportar Excel:', error));
+}
 
 async function buscarPersonasFiltrado() {
     const token = localStorage.getItem("jwtToken");
