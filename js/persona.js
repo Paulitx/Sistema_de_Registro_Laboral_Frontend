@@ -1,6 +1,17 @@
-
+/**
+ * Carga una lista paginada de personas desde el servidor y actualiza la interfaz.
+ *
+ * @async
+ * @function cargarPersonas
+ * @param {number} [page=0] - Número de la página a cargar.
+ * @param {number} [size=5] - Cantidad de registros por página.
+ * @returns {Promise<void>} - No retorna nada directamente; actualiza la tabla en el DOM.
+ * @throws {Error} - Si ocurre un problema durante la carga, como un error de red o de servidor.
+ */
 async function cargarPersonas(page = 0, size = 5) {
-
+    /**
+     * @constant {string} token - Token JWT almacenado en el localStorage para autenticar la solicitud.
+     */
     const token = localStorage.getItem("jwtToken");
 
     if (!token) {
@@ -20,6 +31,31 @@ async function cargarPersonas(page = 0, size = 5) {
 
         if (!respuesta.ok) throw new Error(`HTTP ${respuesta.status}`);
 
+        /**
+         * @typedef {Object} Persona
+         * @property {number} id - ID único de la persona.
+         * @property {string} idUsuario - Identificador de usuario relacionado.
+         * @property {string} nombre - Nombre completo de la persona.
+         * @property {string} email - Dirección de correo electrónico.
+         * @property {string} direccion - Dirección física de la persona.
+         * @property {string} fechaNacimiento - Fecha de nacimiento de la persona.
+         * @property {Object} oficina - Oficina a la que pertenece.
+         * @property {string} oficina.nombre - Nombre de la oficina.
+         * @property {string} telefono - Número de teléfono de la persona.
+         * @property {string} cargo - Cargo o posición en la organización.
+         * @property {boolean} estado - Estado activo/inactivo.
+         */
+
+        /**
+         * @typedef {Object} PaginatedResponse
+         * @property {Persona[]} content - Lista de personas en la página actual.
+         * @property {number} number - Número de la página actual.
+         * @property {number} totalPages - Total de páginas disponibles.
+         */
+
+        /**
+         * @type {PaginatedResponse}
+         */
         const data = await respuesta.json();
 
         const tbody = document.getElementById("personas-list");
@@ -54,6 +90,14 @@ async function cargarPersonas(page = 0, size = 5) {
                 tbody.innerHTML += fila;
             });
         }
+
+        /**
+         * Actualiza los botones de paginación en la interfaz.
+         *
+         * @function actualizarBotones
+         * @param {number} currentPage - Página actual.
+         * @param {number} totalPages - Total de páginas.
+         */
         actualizarBotones(data.number, data.totalPages);
 
     } catch (error) {
@@ -62,40 +106,71 @@ async function cargarPersonas(page = 0, size = 5) {
     }
 }
 
-
+/**
+ * Actualiza los botones de paginación en la interfaz de usuario.
+ *
+ * @function actualizarBotones
+ * @param {number} page - Número de la página actual (comenzando desde 0).
+ * @param {number} totalPages - Número total de páginas disponibles.
+ * @returns {void} - No retorna nada; modifica el DOM directamente.
+ */
 function actualizarBotones(page, totalPages) {
+    /**
+     * @constant {HTMLElement} paginacion - Contenedor de los botones de paginación.
+     */
     const paginacion = document.getElementById("paginacion");
     paginacion.innerHTML = "";
 
-//boton "anterior" de la pagina
+    // Botón "Anterior"
+    /**
+     * @constant {HTMLButtonElement} btnAnterior - Botón para ir a la página anterior.
+     */
     const btnAnterior = document.createElement("button");
     btnAnterior.textContent = "Anterior";
     btnAnterior.className = "btn btn-primary mx-1";
-    btnAnterior.disabled = page === 0;
-    btnAnterior.onclick = () => cargarPersonas(page - 1, 5); ////va a la pagina anterior
+    btnAnterior.disabled = page === 0; // Deshabilitado si es la primera página
+    btnAnterior.onclick = () => cargarPersonas(page - 1, 5); // Cambia a la página anterior
     paginacion.appendChild(btnAnterior);
 
-    //pagina actual
+    // Información de la página actual
+    /**
+     * @constant {HTMLSpanElement} infoPagina - Texto que muestra la página actual y el total de páginas.
+     */
     const infoPagina = document.createElement("span");
-    infoPagina.textContent = `Pagina ${page + 1} de ${totalPages}`;
+    infoPagina.textContent = `Página ${page + 1} de ${totalPages}`;
     infoPagina.className = "mx-2 align-self-center";
     paginacion.appendChild(infoPagina);
 
-//boton "siguiente" de la pagina
+    // Botón "Siguiente"
+    /**
+     * @constant {HTMLButtonElement} btnSiguiente - Botón para ir a la página siguiente.
+     */
     const btnSiguiente = document.createElement("button");
     btnSiguiente.textContent = "Siguiente";
     btnSiguiente.className = "btn btn-primary mx-1";
-    btnSiguiente.disabled = page === totalPages - 1;
-    btnSiguiente.onclick = () => cargarPersonas(page + 1, 5); //va a la siguiente pagiona
+    btnSiguiente.disabled = page === totalPages - 1; // Deshabilitado si es la última página
+    btnSiguiente.onclick = () => cargarPersonas(page + 1, 5); // Cambia a la página siguiente
     paginacion.appendChild(btnSiguiente);
 }
 
-
+/**
+ * Elimina una persona del sistema y actualiza la lista de personas en la interfaz.
+ *
+ * @async
+ * @function eliminarPersona
+ * @param {number} id - ID de la persona que se desea eliminar.
+ * @returns {Promise<void>} - No retorna valores directamente; actualiza la lista de personas al completarse.
+ * @throws {Error} - Si ocurre un error durante la solicitud de eliminación.
+ */
 async function eliminarPersona(id) {
-
-    if(confirm("¿Estás seguro de que deseas eliminar a esta persona?")) {
-
-
+    /**
+     * Muestra un cuadro de confirmación antes de proceder con la eliminación.
+     * @constant {boolean} confirmar - Resultado del cuadro de confirmación.
+     */
+    if (confirm("¿Estás seguro de que deseas eliminar a esta persona?")) {
+        /**
+         * @constant {string|null} token - Token JWT almacenado en el localStorage para autenticar la solicitud.
+         */
         const token = localStorage.getItem("jwtToken");
 
         if (!token) {
@@ -105,6 +180,10 @@ async function eliminarPersona(id) {
         }
 
         try {
+            /**
+             * Realiza la solicitud DELETE al servidor.
+             * @constant {Response} respuesta - Respuesta de la solicitud HTTP.
+             */
             const respuesta = await fetch(`http://localhost:8080/api/persona/${id}`, {
                 method: 'DELETE',
                 headers: {
@@ -114,6 +193,9 @@ async function eliminarPersona(id) {
 
             if (!respuesta.ok) throw new Error(`HTTP ${respuesta.status}`);
 
+            /**
+             * Recarga la lista de personas después de eliminar exitosamente.
+             */
             await cargarPersonas();
 
         } catch (error) {
@@ -123,11 +205,31 @@ async function eliminarPersona(id) {
     }
 }
 
+
+/**
+ * Redirige al usuario a la página de edición de persona, almacenando el ID de la persona en el localStorage.
+ *
+ * @function editarPersona
+ * @param {number} id - ID de la persona que se desea editar.
+ */
 function editarPersona(id) {
     localStorage.setItem("editIndex", id);
     window.location.href = "formPersona.html";
 }
+
+/**
+ * Guarda una nueva persona o actualiza una existente, dependiendo de si hay un ID almacenado en localStorage.
+ *
+ * @async
+ * @function guardarPersona
+ * @param {Event} event - Evento del formulario que se desea manejar.
+ * @returns {Promise<void>} - No retorna valores directamente; redirige al usuario al índice de personas.
+ * @throws {Error} - Si ocurre un error durante la solicitud de creación o edición.
+ */
 async function guardarPersona(event) {
+    /**
+     * @constant {string|null} token - Token JWT almacenado en el localStorage para autenticar la solicitud.
+     */
     const token = localStorage.getItem("jwtToken");
 
     if (!token) {
@@ -138,13 +240,14 @@ async function guardarPersona(event) {
 
     event.preventDefault();
     let form = event.target;
+
     if (!form.checkValidity()) {
         event.stopPropagation();
         form.classList.add('was-validated');
         return;
     }
 
-    // Obtener datos del formulario
+    // Obtención de datos del formulario
     let idUsuario = document.getElementById("idUsuario").value;
     let nombre = document.getElementById("nombre").value;
     let email = document.getElementById("email").value;
@@ -159,14 +262,36 @@ async function guardarPersona(event) {
         alert("Todos los campos son obligatorios");
         return;
     }
-    //persona objeto, aqui se le asigna la oficina tambien
-    let persona = {idUsuario, nombre, email, direccion, fechaNacimiento, telefono, cargo, estado, oficina: parseInt(oficinaId)
+
+    /**
+     * Objeto persona que incluye información básica y asignación de oficina.
+     * @type {Object}
+     * @property {string} idUsuario - ID del usuario asociado.
+     * @property {string} nombre - Nombre de la persona.
+     * @property {string} email - Correo electrónico de la persona.
+     * @property {string} direccion - Dirección de la persona.
+     * @property {string} fechaNacimiento - Fecha de nacimiento de la persona.
+     * @property {string} telefono - Teléfono de contacto de la persona.
+     * @property {string} cargo - Cargo laboral de la persona.
+     * @property {string} estado - Estado activo o inactivo de la persona.
+     * @property {number} oficina - ID de la oficina asociada.
+     */
+    let persona = {
+        idUsuario,
+        nombre,
+        email,
+        direccion,
+        fechaNacimiento,
+        telefono,
+        cargo,
+        estado,
+        oficina: parseInt(oficinaId)
     };
 
     let id = localStorage.getItem("editIndex");
 
     if (id !== null) {
-        //modiificar
+        // Modificación de persona
         try {
             const respuesta = await fetch(`http://127.0.0.1:8080/api/persona/${id}`, {
                 method: 'PUT',
@@ -187,7 +312,7 @@ async function guardarPersona(event) {
             alert('No se pudo guardar la persona.');
         }
     } else {
-        ///agregar
+        // Creación de persona
         try {
             const respuesta = await fetch('http://127.0.0.1:8080/api/persona', {
                 method: 'POST',
@@ -209,27 +334,59 @@ async function guardarPersona(event) {
     }
 }
 
+
+/**
+ * Carga las oficinas desde el servidor y las agrega como opciones en un elemento `<select>` en la interfaz.
+ *
+ * @async
+ * @function cargarOficinasParaSelect
+ * @param {number|null} [idOficinaSeleccionada=null] - ID de la oficina que debe aparecer seleccionada inicialmente.
+ * Si no se proporciona, ninguna opción estará preseleccionada.
+ * @returns {Promise<void>} - No retorna valores directamente; actualiza el contenido del elemento `<select>`.
+ * @throws {Error} - Si ocurre un error durante la solicitud de datos.
+ */
 async function cargarOficinasParaSelect(idOficinaSeleccionada = null) {
+    /**
+     * @constant {string|null} token - Token JWT almacenado en el localStorage para autenticar la solicitud.
+     */
     const token = localStorage.getItem("jwtToken");
+
     try {
+        /**
+         * Realiza la solicitud GET para obtener las oficinas.
+         * @constant {Response} respuesta - Respuesta de la solicitud HTTP.
+         */
         const respuesta = await fetch('http://127.0.0.1:8080/api/oficina', {
             headers: { 'Authorization': `Bearer ${token}` }
         });
 
         if (!respuesta.ok) throw new Error(`HTTP ${respuesta.status}`);
 
+        /**
+         * Lista de oficinas obtenida desde la API.
+         * @type {Array<Object>}
+         */
         const oficinas = await respuesta.json();
 
+        /**
+         * Elemento `<select>` donde se cargarán las oficinas.
+         * @constant {HTMLSelectElement} select - Elemento del DOM identificado como "oficina".
+         */
         const select = document.getElementById("oficina");
         select.innerHTML = '<option value="">Selecciona una oficina</option>';
 
+        /**
+         * Agrega las oficinas como opciones en el elemento `<select>`.
+         */
         oficinas.forEach(oficina => {
             const option = document.createElement("option");
             option.value = oficina.id;
             option.textContent = oficina.nombre;
+
             if (idOficinaSeleccionada && oficina.id === idOficinaSeleccionada) {
                 option.selected = true;
             }
+
             select.appendChild(option);
         });
     } catch (error) {
@@ -238,9 +395,21 @@ async function cargarOficinasParaSelect(idOficinaSeleccionada = null) {
     }
 }
 
-// Función para descargar el archivo PDF
+
+/**
+ * Exporta un archivo PDF con información de las personas desde el servidor.
+ *
+ * @async
+ * @function exportarPDF
+ * @returns {Promise<void>} - No retorna valores directamente; genera una descarga del archivo PDF.
+ * @throws {Error} - Si ocurre un error durante la solicitud o al procesar la respuesta.
+ */
 async function exportarPDF() {
+    /**
+     * @constant {string|null} token - Token JWT almacenado en el localStorage para autenticar la solicitud.
+     */
     const token = localStorage.getItem("jwtToken");
+
     fetch('http://localhost:8080/api/persona/exportar/pdf', {
         method: 'GET',
         headers: {
@@ -249,12 +418,19 @@ async function exportarPDF() {
     })
         .then(response => {
             if (response.ok) {
-                return response.blob(); // Convertir la respuesta en un Blob
+                /**
+                 * Convierte la respuesta en un Blob si la solicitud fue exitosa.
+                 * @returns {Blob} - Representación del archivo PDF como Blob.
+                 */
+                return response.blob();
             } else {
                 throw new Error('No se pudo exportar el archivo PDF.');
             }
         })
         .then(blob => {
+            /**
+             * Genera una URL de objeto a partir del Blob y desencadena la descarga del archivo.
+             */
             const url = window.URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
@@ -263,11 +439,26 @@ async function exportarPDF() {
             a.click();
             a.remove();
         })
-        .catch(error => console.error('Error al exportar PDF:', error));
+        .catch(error => {
+            console.error('Error al exportar PDF:', error);
+        });
 }
 
+
+/**
+ * Exporta un archivo Excel con información de las personas desde el servidor.
+ *
+ * @async
+ * @function exportarExcel
+ * @returns {Promise<void>} - No retorna valores directamente; genera una descarga del archivo Excel.
+ * @throws {Error} - Si ocurre un error durante la solicitud o al procesar la respuesta.
+ */
 async function exportarExcel() {
+    /**
+     * @constant {string|null} token - Token JWT almacenado en el localStorage para autenticar la solicitud.
+     */
     const token = localStorage.getItem("jwtToken");
+
     fetch('http://localhost:8080/api/persona/exportar/excel', {
         method: 'GET',
         headers: {
@@ -276,12 +467,19 @@ async function exportarExcel() {
     })
         .then(response => {
             if (response.ok) {
-                return response.blob(); // Convertir la respuesta en un Blob
+                /**
+                 * Convierte la respuesta en un Blob si la solicitud fue exitosa.
+                 * @returns {Blob} - Representación del archivo Excel como Blob.
+                 */
+                return response.blob();
             } else {
                 throw new Error('No se pudo exportar el archivo Excel.');
             }
         })
         .then(blob => {
+            /**
+             * Genera una URL de objeto a partir del Blob y desencadena la descarga del archivo.
+             */
             const url = window.URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
@@ -290,9 +488,22 @@ async function exportarExcel() {
             a.click();
             a.remove();
         })
-        .catch(error => console.error('Error al exportar Excel:', error));
+        .catch(error => {
+            console.error('Error al exportar Excel:', error);
+        });
 }
 
+
+/**
+ * Realiza una búsqueda filtrada de personas según un atributo y valor especificados.
+ * Si no se especifica valor, carga todas las personas.
+ * Actualiza la tabla HTML con los resultados encontrados.
+ *
+ * @async
+ * @function buscarPersonasFiltrado
+ * @returns {Promise<void>} No retorna valor, actualiza la UI directamente.
+ * @throws {Error} Lanza error si falla la solicitud fetch.
+ */
 async function buscarPersonasFiltrado() {
     const token = localStorage.getItem("jwtToken");
     if (!token) {
@@ -310,7 +521,8 @@ async function buscarPersonasFiltrado() {
     }
 
     if (!valor) {
-        await cargarPersonas(); // Si el valor está vacío, carga todos los datos
+        // Si no hay valor, carga todas las personas
+        await cargarPersonas();
         return;
     }
 
@@ -363,12 +575,10 @@ async function buscarPersonasFiltrado() {
         tbody.innerHTML = "";
 
         if (!respuesta.ok) {
-            // Para búsqueda por ID, si no se encuentra, mostrar mensaje amigable
             if (atributo === "id" && respuesta.status === 404) {
                 tbody.innerHTML = `<tr><td colspan="11" class="text-center text-muted">No se encontraron personas con esos criterios.</td></tr>`;
                 return;
             }
-
             alert(`Error en la búsqueda: HTTP ${respuesta.status}`);
             return;
         }
@@ -442,6 +652,10 @@ async function buscarPersonasFiltrado() {
     }
 }
 
+/**
+ * Configura el listener para el campo de búsqueda una vez que el DOM ha cargado.
+ * Cuando el usuario escribe en el campo #busqueda, se dispara la función buscarPersonasFiltrado.
+ */
 document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("busqueda").addEventListener("input", () => {
         buscarPersonasFiltrado();

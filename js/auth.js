@@ -1,8 +1,16 @@
+/**
+ * Maneja el inicio de sesión del usuario.
+ * Envía las credenciales al backend y guarda el token JWT en localStorage si la autenticación es exitosa.
+ * Redirige a la página principal en caso de éxito.
+ *
+ * @async
+ * @param {Event} event - El evento submit del formulario.
+ */
 async function login(event) {
     event.preventDefault();
 
     let form = event.target;
-    if(!form.checkValidity()){
+    if (!form.checkValidity()) {
         event.stopPropagation();
         form.classList.add('was-validated');
         return;
@@ -27,7 +35,6 @@ async function login(event) {
         const token = await response.text();
         localStorage.setItem("jwtToken", token);
 
-
         const decoded = jwt_decode(token);
         console.log(decoded);
 
@@ -39,11 +46,19 @@ async function login(event) {
     }
 }
 
+/**
+ * Cierra la sesión del usuario eliminando el token JWT del localStorage
+ * y redirigiendo a la página de login.
+ */
 function logout() {
     localStorage.removeItem("jwtToken");
     window.location.href = "login.html";
 }
 
+/**
+ * Verifica si el usuario está autenticado al cargar una página protegida.
+ * Si no hay token JWT en localStorage, redirige a la página de login.
+ */
 function verificarAutenticacion() {
     const token = localStorage.getItem("jwtToken");
     if (!token) {
@@ -51,22 +66,25 @@ function verificarAutenticacion() {
     }
 }
 
+/**
+ * Función autoejecutable que aplica validación personalizada de Bootstrap a los formularios.
+ * Previene el envío de formularios si no cumplen con los requisitos de validación HTML5.
+ */
 (function () {
     'use strict'
 
-    // Fetch all the forms we want to apply custom Bootstrap validation styles to
-    var forms = document.querySelectorAll('.needs-validation')
+    // Selecciona todos los formularios que requieren validación
+    var forms = document.querySelectorAll('.needs-validation');
 
-    // Loop over them and prevent submission
-    Array.prototype.slice.call(forms)
-        .forEach(function (form) {
-            form.addEventListener('submit', function (event) {
-                if (!form.checkValidity()) {
-                    event.preventDefault()
-                    event.stopPropagation()
-                }
+    // Agrega validación personalizada a cada formulario
+    Array.prototype.slice.call(forms).forEach(function (form) {
+        form.addEventListener('submit', function (event) {
+            if (!form.checkValidity()) {
+                event.preventDefault();
+                event.stopPropagation();
+            }
 
-                form.classList.add('was-validated')
-            }, false)
-        })
-})()
+            form.classList.add('was-validated');
+        }, false);
+    });
+})();

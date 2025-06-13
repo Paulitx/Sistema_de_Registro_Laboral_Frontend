@@ -1,3 +1,8 @@
+/**
+ * Ejecuta funciones cuando el DOM ha sido completamente cargado.
+ * Verifica si hay un token de sesión, y si no lo hay, redirige al login.
+ * Luego, configura encabezados para autenticación y gestiona los gráficos.
+ */
 document.addEventListener("DOMContentLoaded", () => {
     const token = localStorage.getItem("jwtToken");
 
@@ -11,7 +16,10 @@ document.addEventListener("DOMContentLoaded", () => {
         "Authorization": `Bearer ${token}`
     };
 
-    // Funciones para cargar datos y generar gráficos
+    /**
+     * Carga el gráfico de las personas con más entradas.
+     * Obtiene datos del backend y genera el gráfico de barras correspondiente.
+     */
     const cargarGraficoPersonas = () => {
         fetch("http://localhost:8080/api/reportes/topPersonas", { headers })
             .then(res => res.json())
@@ -23,6 +31,10 @@ document.addEventListener("DOMContentLoaded", () => {
             .catch(error => console.error("Error cargando top-personas:", error));
     };
 
+    /**
+     * Carga el gráfico de las oficinas con más entradas.
+     * Obtiene datos del backend y genera el gráfico de barras correspondiente.
+     */
     const cargarGraficoOficinas = () => {
         fetch("http://localhost:8080/api/reportes/topOficinas", { headers })
             .then(res => res.json())
@@ -34,6 +46,10 @@ document.addEventListener("DOMContentLoaded", () => {
             .catch(error => console.error("Error cargando top-oficinas:", error));
     };
 
+    /**
+     * Carga el gráfico de personas que actualmente están dentro de las oficinas.
+     * Cada persona se cuenta una vez para el gráfico.
+     */
     const cargarGraficoActuales = () => {
         fetch("http://localhost:8080/api/reportes/personasDentro", { headers })
             .then(res => res.json())
@@ -45,17 +61,23 @@ document.addEventListener("DOMContentLoaded", () => {
             .catch(error => console.error("Error cargando personas-dentro:", error));
     };
 
-    // Mostrar solo el gráfico seleccionado
+    // Gestión del cambio de tipo de gráfico en el select
+
     const select = document.getElementById("grafico");
+
+    /**
+     * Escucha el cambio del selector de tipo de gráfico y muestra el gráfico correspondiente.
+     * @param {Event} event - El evento de cambio del select.
+     */
     select.addEventListener("change", (event) => {
         const valor = event.target.value;
 
-        // Ocultar todos los gráficos primero
+        // Oculta todos los gráficos
         document.querySelectorAll(".graf_container canvas").forEach(canvas => {
             canvas.style.display = "none";
         });
 
-        // Mostrar y cargar el gráfico correspondiente
+        // Muestra y carga el gráfico seleccionado
         switch (valor) {
             case "persona":
                 document.getElementById("graficoPersonas").style.display = "block";
@@ -70,14 +92,16 @@ document.addEventListener("DOMContentLoaded", () => {
                 cargarGraficoActuales();
                 break;
         }
-
-
     });
-
 });
 
-
-///generacion de grafico de barras simple
+/**
+ * Genera un gráfico de barras utilizando Chart.js.
+ * @param {string} canvasId - ID del elemento canvas donde se renderizará el gráfico.
+ * @param {string} titulo - Título del gráfico.
+ * @param {string[]} labels - Etiquetas para el eje X.
+ * @param {number[]} valores - Valores para el eje Y.
+ */
 function generarGraficoBarras(canvasId, titulo, labels, valores) {
     const ctx = document.getElementById(canvasId).getContext("2d");
     new Chart(ctx, {
@@ -103,20 +127,24 @@ function generarGraficoBarras(canvasId, titulo, labels, valores) {
     });
 }
 
-//bloque ael rol de administrador
+/**
+ * Bloqueo de acceso para usuarios con rol no autorizado.
+ * Verifica el token y decodifica el rol del usuario para controlar el acceso.
+ */
 document.addEventListener('DOMContentLoaded', () => {
     const token = localStorage.getItem("jwtToken");
     if (!token) {
         window.location.href = "login.html";
         return;
     }
-    const decoded = jwt_decode(token);
 
+    const decoded = jwt_decode(token);
     let userRole;
 
     if (decoded.roles && decoded.roles.length > 0) {
-        userRole = decoded.roles[0]; // Tomamos el primer rol
+        userRole = decoded.roles[0]; // Primer rol
     }
+
     if (userRole === "ROLE_REGISTRADOR") {
         alert("No tienes acceso a esta página");
         window.location.href = "indexRegistro.html";

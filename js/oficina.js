@@ -1,3 +1,23 @@
+/**
+ * Carga una lista de oficinas paginadas desde el servidor y las muestra en la tabla del DOM.
+ *
+ * @async
+ * @function cargarOficinas
+ * @param {number} [page=0] - Número de página a cargar (por defecto, 0).
+ * @param {number} [size=5] - Cantidad de oficinas por página (por defecto, 5).
+ * @throws {Error} Si ocurre un error al obtener las oficinas desde el servidor.
+ *
+ * @description
+ * - Verifica que exista un token JWT en el almacenamiento local antes de proceder.
+ * - Si no hay token, redirige al usuario a la página de inicio de sesión.
+ * - Realiza una solicitud GET a la API de oficinas con parámetros de paginación.
+ * - Muestra las oficinas en una tabla del DOM o un mensaje si no hay datos.
+ * - Actualiza los botones de paginación basados en la respuesta del servidor.
+ *
+ * @example
+ * // Llamar la función para cargar la primera página con 10 oficinas por página
+ * cargarOficinas(0, 10);
+ */
 async function cargarOficinas(page = 0, size = 5) {
 
     const token = localStorage.getItem("jwtToken");
@@ -56,6 +76,22 @@ async function cargarOficinas(page = 0, size = 5) {
     }
 }
 
+/**
+ * Actualiza los botones de paginación en el DOM según la página actual y el número total de páginas.
+ *
+ * @function actualizarBotones
+ * @param {number} page - El número de la página actual (basado en índice, comenzando desde 0).
+ * @param {number} totalPages - El número total de páginas disponibles.
+ *
+ * @description
+ * - Genera botones "Anterior" y "Siguiente" según la página actual y las habilita/deshabilita si es la primera o última página.
+ * - Muestra información sobre la página actual en el formato "Página X de Y".
+ * - Los botones llaman a la función `cargarOficinas` con el número de página correspondiente al hacer clic.
+ *
+ * @example
+ * // Actualiza los botones de paginación para la página 2 de un total de 5
+ * actualizarBotones(1, 5);
+ */
 function actualizarBotones(page, totalPages) {
     const paginacion = document.getElementById("paginacion");
     paginacion.innerHTML = "";
@@ -83,7 +119,27 @@ function actualizarBotones(page, totalPages) {
     paginacion.appendChild(btnSiguiente);
 }
 
-
+/**
+ * Elimina una oficina específica del sistema y actualiza la lista de oficinas en el DOM.
+ *
+ * @async
+ * @function eliminarOficina
+ * @param {number} id - El ID de la oficina que se desea eliminar.
+ *
+ * @description
+ * - Solicita confirmación al usuario antes de proceder con la eliminación.
+ * - Verifica la existencia de un token JWT en el almacenamiento local.
+ * - Si no hay token, redirige al usuario a la página de inicio de sesión.
+ * - Realiza una solicitud DELETE a la API para eliminar la oficina con el ID proporcionado.
+ * - En caso de éxito, actualiza la lista de oficinas cargándolas de nuevo.
+ * - Maneja errores y muestra alertas en caso de problemas durante el proceso.
+ *
+ * @throws {Error} Si ocurre un error al realizar la solicitud DELETE o actualizar la lista de oficinas.
+ *
+ * @example
+ * // Eliminar una oficina con ID 3
+ * eliminarOficina(3);
+ */
 async function eliminarOficina(id) {
 
     if(confirm("¿Estás seguro de que deseas eliminar a esta Oficina?")) {
@@ -115,11 +171,46 @@ async function eliminarOficina(id) {
     }
 }
 
+/**
+ * Redirige al usuario a un formulario para editar una oficina específica.
+ *
+ * @function editarOficina
+ * @param {number} id - El ID de la oficina que se desea editar.
+ *
+ * @description
+ * - Almacena el ID de la oficina en el almacenamiento local bajo la clave `editIndex`.
+ * - Redirige al usuario a la página `formOficina.html`, donde se puede editar la oficina.
+ *
+ * @example
+ * // Editar una oficina con ID 5
+ * editarOficina(5);
+ */
 function editarOficina(id) {
     localStorage.setItem("editIndex", id);
     window.location.href = "formOficina.html";
 }
 
+/**
+ * Guarda una oficina en el sistema, ya sea creando una nueva o actualizando una existente.
+ *
+ * @async
+ * @function guardarOficina
+ * @param {Event} event - El evento de envío del formulario.
+ *
+ * @description
+ * - Verifica la existencia y validez del token JWT.
+ * - Decodifica el token para determinar el rol del usuario y restringe el acceso según corresponda.
+ * - Valida los campos del formulario y muestra alertas en caso de errores.
+ * - Realiza una solicitud `POST` para crear una oficina nueva o `PUT` para actualizar una existente.
+ * - Redirige a la página `indexOficina.html` tras una operación exitosa.
+ *
+ * @throws {Error} Si ocurre un error durante la solicitud HTTP para guardar o actualizar la oficina.
+ *
+ * @example
+ * // Vincular la función al evento de envío del formulario
+ * const formulario = document.getElementById("formulario-oficina");
+ * formulario.addEventListener("submit", guardarOficina);
+ */
 async function guardarOficina(event) {
     const token = localStorage.getItem("jwtToken");
 
@@ -203,6 +294,24 @@ async function guardarOficina(event) {
     }
 }
 
+/**
+ * Inicializa validaciones personalizadas de Bootstrap para formularios.
+ *
+ * @function
+ * @description
+ * Este bloque de código:
+ * - Activa las validaciones de Bootstrap en los formularios que tienen la clase `needs-validation`.
+ * - Impide el envío de formularios que no cumplan con las validaciones requeridas.
+ * - Añade la clase `was-validated` a los formularios para mostrar los estilos de validación personalizados de Bootstrap.
+ *
+ * @example
+ * // Asegúrate de que los formularios incluyan la clase 'needs-validation' y
+ * // utiliza atributos como 'required' en los campos para activar las validaciones.
+ * <form class="needs-validation" novalidate>
+ *   <input type="text" class="form-control" required />
+ *   <button type="submit" class="btn btn-primary">Enviar</button>
+ * </form>
+ */
 // Example starter JavaScript for disabling form submissions if there are invalid fields
 (function () {
     'use strict'
@@ -224,8 +333,41 @@ async function guardarOficina(event) {
         })
 })()
 
+/**
+ * Variable para almacenar el mapa de Google Maps.
+ *
+ * @type {google.maps.Map | null}
+ */
 let mapa;
+
+/**
+ * Bandera para controlar si el mapa ya fue cargado.
+ *
+ * @type {boolean}
+ */
 let mapaCargado = false;
+
+/**
+ * Inicializa un mapa de Google Maps en un elemento HTML específico y habilita la selección de ubicaciones.
+ *
+ * @function inicializarMapa
+ * @param {number} [latInicial=9.971851666746058] - Latitud inicial para centrar el mapa. Por defecto, 9.971851666746058.
+ * @param {number} [lngInicial=-84.26739519417619] - Longitud inicial para centrar el mapa. Por defecto, -84.26739519417619.
+ *
+ * @description
+ * - Crea un mapa utilizando la API de Google Maps y lo centra en las coordenadas iniciales proporcionadas.
+ * - Habilita un evento `click` en el mapa para capturar la latitud y longitud del punto seleccionado.
+ * - Escribe las coordenadas seleccionadas en un elemento de entrada HTML con el ID `ubicacion`.
+ * - Evita múltiples inicializaciones del mapa utilizando la variable `mapaCargado`.
+ *
+ * @example
+ * // Llamar a la función para inicializar el mapa
+ * inicializarMapa();
+ *
+ * @example
+ * // Inicializar el mapa en otra ubicación
+ * inicializarMapa(37.7749, -122.4194); // San Francisco, CA
+ */
 
 function inicializarMapa(latInicial = 9.971851666746058, lngInicial = -84.26739519417619) {
     if (!mapaCargado) {
@@ -243,6 +385,30 @@ function inicializarMapa(latInicial = 9.971851666746058, lngInicial = -84.267395
         mapaCargado = true;
     }
 }
+
+/**
+ * Configura el comportamiento inicial de la página al cargar el DOM.
+ *
+ * @function
+ *
+ * @description
+ * - Detecta si el navegador soporta geolocalización.
+ * - Si se obtiene la ubicación del usuario, inicializa el mapa centrado en las coordenadas obtenidas.
+ * - Si no se puede obtener la ubicación, utiliza una ubicación predeterminada.
+ * - Agrega funcionalidad al botón para mostrar u ocultar el contenedor del mapa dinámicamente.
+ * - Modifica el texto y el icono del botón dependiendo del estado del contenedor.
+ *
+ * @listens DOMContentLoaded
+ *
+ * @example
+ * // HTML esperado:
+ * <div id="mapaContainer" style="display:none;">
+ *   <div id="googleMap" style="height: 400px;"></div>
+ * </div>
+ * <button id="btnMostrarMapa">Mostrar mapa</button>
+ *
+ * @requires inicializarMapa
+ */
 document.addEventListener("DOMContentLoaded", function () {
     const mapaContainer = document.getElementById("mapaContainer");
     const boton = document.getElementById("btnMostrarMapa");
@@ -287,6 +453,45 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 });
 
+/**
+ * Realiza la búsqueda de oficinas filtradas por un atributo y valor específicos.
+ * Si no se proporciona un valor de búsqueda, carga todas las oficinas disponibles.
+ *
+ * @async
+ * @function buscarOficinasFiltrado
+ *
+ * @description
+ * - Valida la sesión mediante el token almacenado en `localStorage`.
+ * - Verifica que se seleccionen un atributo y un valor válidos para la búsqueda.
+ * - Construye dinámicamente la URL para realizar la consulta al backend dependiendo del atributo seleccionado.
+ * - Muestra los resultados en una tabla HTML o un mensaje de "sin resultados".
+ * - Si el atributo es `id`, busca una única oficina; si no, realiza una búsqueda paginada o por coincidencia.
+ *
+ * @throws {Error} Si ocurre un problema en la consulta o en la conexión al servidor.
+ *
+ * @requires cargarOficinas
+ * @requires editarOficina
+ * @requires eliminarOficina
+ *
+ * @example
+ * <!-- HTML necesario -->
+ * <select id="atributoBusqueda">
+ *   <option value="id">ID</option>
+ *   <option value="nombre">Nombre</option>
+ *   <option value="ubicacion">Ubicación</option>
+ *   <option value="limitePersonas">Límite de Personas</option>
+ *   <option value="personasActuales">Personas Actuales</option>
+ * </select>
+ * <input type="text" id="busqueda" placeholder="Valor de búsqueda">
+ * <button onclick="buscarOficinasFiltrado()">Buscar</button>
+ * <table>
+ *   <tbody id="oficinas-list"></tbody>
+ * </table>
+ *
+ * @example
+ * // Uso
+ * buscarOficinasFiltrado();
+ */
 async function buscarOficinasFiltrado() {
     const token = localStorage.getItem("jwtToken");
     if (!token) {
@@ -407,6 +612,7 @@ async function buscarOficinasFiltrado() {
     }
 }
 
+
 document.addEventListener('DOMContentLoaded', () => {
     const token = localStorage.getItem("jwtToken");
     if (!token) {
@@ -432,4 +638,3 @@ document.addEventListener("DOMContentLoaded", () => {
         buscarOficinasFiltrado();
     });
 });
-

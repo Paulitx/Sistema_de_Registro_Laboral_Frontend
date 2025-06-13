@@ -23,36 +23,6 @@
 
   });</script>
   <script src ="js/persona.js"></script>
-<!--  <script>-->
-<!--    document.addEventListener("DOMContentLoaded", () => {-->
-<!--      cargarOficinas();-->
-
-<!--      const index = localStorage.getItem("editIndex");-->
-<!--      if (index !== null) {-->
-<!--        const personas = JSON.parse(localStorage.getItem("personas")) || [];-->
-<!--        const persona = personas[index];-->
-
-<!--        // Llenar campos del formulario-->
-<!--        document.getElementById("id").value = persona.id;-->
-<!--        document.getElementById("nombre").value = persona.nombre;-->
-<!--        document.getElementById("email").value = persona.email;-->
-<!--        document.getElementById("direccion").value = persona.direccion;-->
-<!--        document.getElementById("fechaNacimiento").value = persona.fechaNacimiento;-->
-<!--        document.getElementById("telefono").value = persona.telefono;-->
-<!--        document.getElementById("cargo").value = persona.cargo;-->
-<!--        document.getElementById("estado").value = persona.estado;-->
-
-<!--        // Esperar a que las oficinas estén cargadas para poder seleccionar-->
-<!--        setTimeout(() => {-->
-<!--          const oficinas = JSON.parse(localStorage.getItem("oficinas")) || [];-->
-<!--          const indexOficina = oficinas.findIndex(o => o.nombre === persona.oficina.nombre);-->
-<!--          if (indexOficina !== -1) {-->
-<!--            document.getElementById("oficina").value = indexOficina;-->
-<!--          }-->
-<!--        }, 100);-->
-<!--      }-->
-<!--    });-->
-<!--  </script>-->
   <script src="https://cdn.jsdelivr.net/npm/jwt-decode@3.1.2/build/jwt-decode.min.js"></script>
   <script>
     document.addEventListener('DOMContentLoaded', () => {
@@ -71,7 +41,7 @@
 
       if (userRole === "ROLE_VISOR") {
         alert("No tienes acceso a esta página");
-        window.location.href = "oficinaIndex.html";
+        window.location.href = "indexOficina.html";
       } else if(userRole === "ROLE_REGISTRADOR"){
         alert("No tienes acceso a esta página");
         window.location.href = "indexRegistro.html";

@@ -1,3 +1,22 @@
+/**
+ * Carga registros paginados desde el backend y actualiza la tabla HTML con los datos.
+ *
+ * @async
+ * @function cargarRegistros
+ * @param {number} [page=0] - Número de página a cargar (0-indexado).
+ * @param {number} [size=5] - Cantidad de registros por página.
+ *
+ * @throws {Error} Si la respuesta del servidor no es exitosa (status HTTP distinto de 2xx).
+ *
+ * @description
+ * Obtiene el token JWT desde localStorage para autorización.
+ * Si no hay token, redirige al login.
+ * Realiza una petición GET paginada al endpoint `/api/registro/paginacion`.
+ * Llena el tbody con id "registros-list" con las filas correspondientes.
+ * Muestra mensaje si no hay registros.
+ * Actualiza los botones de paginación usando la función `actualizarBotones`.
+ * En caso de error, muestra alerta y escribe en consola.
+ */
 async function cargarRegistros(page = 0, size = 5) {
 
     const token = localStorage.getItem("jwtToken");
@@ -54,6 +73,19 @@ async function cargarRegistros(page = 0, size = 5) {
     }
 }
 
+/**
+ * Actualiza los botones de paginación en la interfaz de usuario.
+ *
+ * @function actualizarBotones
+ * @param {number} page - Número de la página actual (0-indexado).
+ * @param {number} totalPages - Total de páginas disponibles.
+ *
+ * @description
+ * Crea y muestra botones "Anterior" y "Siguiente" para navegar entre páginas,
+ * deshabilitando los botones cuando no se pueda avanzar o retroceder más.
+ * También muestra un texto con la página actual y el total de páginas.
+ * Al hacer clic en los botones, llama a la función cargarRegistros con la página correspondiente.
+ */
 function actualizarBotones(page, totalPages) {
     const paginacion = document.getElementById("paginacion");
     paginacion.innerHTML = "";
@@ -81,6 +113,20 @@ function actualizarBotones(page, totalPages) {
     paginacion.appendChild(btnSiguiente);
 }
 
+/**
+ * Elimina un registro por su ID después de confirmar la acción con el usuario.
+ *
+ * @async
+ * @function eliminarRegistro
+ * @param {number|string} id - Identificador único del registro a eliminar.
+ *
+ * @throws {Error} Si la respuesta del servidor no es exitosa (HTTP no OK).
+ *
+ * @description
+ * Solicita confirmación al usuario antes de enviar una petición DELETE al servidor
+ * para eliminar el registro con el ID especificado. Si no hay token de sesión,
+ * redirige al login. Después de eliminar, recarga la lista de registros.
+ */
 async function eliminarRegistro(id) {
 
     if(confirm("¿Estás seguro de que deseas eliminar a esta Registro?")) {
@@ -112,12 +158,34 @@ async function eliminarRegistro(id) {
     }
 }
 
-//edita el registro
+/**
+ * Guarda el índice del registro a editar en localStorage y redirige al formulario de edición.
+ *
+ * @function editarRegistro
+ * @param {number|string} index - Identificador o índice del registro a editar.
+ *
+ * @description
+ * Esta función almacena en localStorage el ID del registro seleccionado para editar,
+ * y luego redirige al usuario a la página del formulario para que pueda modificar los datos.
+ */
 function editarRegistro(index) {
     localStorage.setItem("editIndex", index);
     window.location.href = "formRegistro.html";
 }
 
+/**
+ * Guarda o actualiza un registro de entrada/salida mediante una petición HTTP.
+ *
+ * @async
+ * @function guardarRegistro
+ * @param {Event} event - Evento del formulario que dispara la función.
+ *
+ * @description
+ * Esta función previene el envío normal del formulario, valida los campos,
+ * y dependiendo de si existe un id en localStorage (editIndex), hace una petición
+ * POST para crear un nuevo registro o PUT para actualizar uno existente.
+ * Valida que el usuario tenga un token JWT válido y maneja errores de la petición.
+ */
 async function guardarRegistro(event) {
 
     const token = localStorage.getItem("jwtToken");
@@ -198,6 +266,19 @@ async function guardarRegistro(event) {
         }
     }
 }
+
+/**
+ * Inicializa la validación personalizada de formularios con Bootstrap.
+ *
+ * @description
+ * Este script selecciona todos los formularios con la clase `.needs-validation`
+ * y añade un listener al evento 'submit' para validar los campos.
+ * Si el formulario no es válido, previene el envío y añade la clase
+ * `was-validated` para mostrar estilos de validación.
+ *
+ * @function
+ * @immediatelyInvokedFunctionExpression
+ */
 // Example starter JavaScript for disabling form submissions if there are invalid fields
 (function () {
     'use strict'
@@ -218,6 +299,21 @@ async function guardarRegistro(event) {
             }, false)
         })
 })()
+
+/**
+ * Carga las personas activas desde la API y las agrega como opciones en un <select>.
+ *
+ * @async
+ * @function cargarPersonasSelect
+ *
+ * @throws {Alert} Si no hay token de sesión válido, redirige al login y alerta al usuario.
+ * @throws {Alert} Si ocurre un error al obtener las personas o la respuesta no es correcta.
+ *
+ * @description
+ * Obtiene el token JWT del localStorage y realiza una petición GET a la API para obtener
+ * las personas que están activas (`estado === true`). Luego llena el elemento <select> con id "persona"
+ * con las opciones correspondientes, mostrando el nombre de cada persona y asignando el id como valor.
+ */
 async function cargarPersonasSelect() {
     const selectPersona = document.getElementById("persona");
     try {
@@ -255,6 +351,19 @@ async function cargarPersonasSelect() {
     }
 }
 
+/**
+ * Exporta los registros a un archivo Excel descargable.
+ *
+ * @async
+ * @function exportarExcel
+ *
+ * @description
+ * Realiza una solicitud GET a la API para obtener un archivo Excel con los registros.
+ * Si la respuesta es correcta, crea un enlace temporal para descargar el archivo.
+ * En caso de error, muestra un mensaje en la consola.
+ *
+ * @throws {Error} Si la respuesta de la API no es exitosa, lanza un error.
+ */
 async function exportarExcel() {
     const token = localStorage.getItem("jwtToken");
     fetch('http://localhost:8080/api/registro/exportar/excel', {
@@ -282,7 +391,19 @@ async function exportarExcel() {
         .catch(error => console.error('Error al exportar Excel:', error));
 }
 
-// Función para descargar el archivo PDF
+/**
+ * Exporta los registros a un archivo PDF descargable.
+ *
+ * @async
+ * @function exportarPDF
+ *
+ * @description
+ * Realiza una solicitud GET a la API para obtener un archivo PDF con los registros.
+ * Si la respuesta es correcta, crea un enlace temporal para descargar el archivo.
+ * En caso de error, muestra un mensaje en la consola.
+ *
+ * @throws {Error} Si la respuesta de la API no es exitosa, lanza un error.
+ */
 async function exportarPDF() {
     const token = localStorage.getItem("jwtToken");
     fetch('http://localhost:8080/api/registro/exportar/pdf', {
@@ -310,6 +431,24 @@ async function exportarPDF() {
         .catch(error => console.error('Error al exportar PDF:', error));
 }
 
+/**
+ * Realiza una búsqueda filtrada de registros con paginación.
+ *
+ * @async
+ * @function buscarRegistrosFiltrado
+ * @param {number} [page=0] - Número de página para la paginación.
+ * @param {number} [size=5] - Cantidad de registros por página.
+ *
+ * @description
+ * Obtiene el token JWT desde localStorage, verifica si está presente.
+ * Recoge los valores de atributo y valor para filtrar.
+ * Dependiendo del atributo seleccionado, construye la URL adecuada para la búsqueda.
+ * Si no hay valor para filtrar, carga todos los registros.
+ * Muestra los resultados en una tabla y actualiza los botones de paginación.
+ * Maneja errores y casos donde no se encuentran registros.
+ *
+ * @throws {Error} Si la solicitud fetch falla o el servidor responde con un error HTTP.
+ */
 async function buscarRegistrosFiltrado(page = 0, size = 5) {
     const token = localStorage.getItem("jwtToken");
     if (!token) {
