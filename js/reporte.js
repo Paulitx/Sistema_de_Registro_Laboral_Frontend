@@ -1,174 +1,124 @@
 document.addEventListener("DOMContentLoaded", () => {
-    const registros = JSON.parse(localStorage.getItem("registros")) || [];
+    const token = localStorage.getItem("jwtToken");
 
-    generarGraficoPersona(registros);
-    generarGraficoOficinas(registros);
-    generarGraficoPersonasActuales(registros);
+    if (!token) {
+        alert("No has iniciado sesión.");
+        window.location.href = "login.html";
+        return;
+    }
 
-    const grafContainer = document.querySelector(".graf_container");
-    const graficos = {
-        persona: document.getElementById("grafPersona"),
-        oficinas: document.getElementById("grafOficinas"),
-        actuales: document.getElementById("grafPersonasActuales")
+    const headers = {
+        "Authorization": `Bearer ${token}`
     };
 
-    grafContainer.style.display = "none";
-    Object.values(graficos).forEach(graf => graf.style.display = "none");
+    // Funciones para cargar datos y generar gráficos
+    const cargarGraficoPersonas = () => {
+        fetch("http://localhost:8080/api/reportes/topPersonas", { headers })
+            .then(res => res.json())
+            .then(data => {
+                const nombres = data.map(item => item.persona);
+                const entradas = data.map(item => item.entradas);
+                generarGraficoBarras("graficoPersonas", "Entradas por Persona", nombres, entradas);
+            })
+            .catch(error => console.error("Error cargando top-personas:", error));
+    };
 
-    document.getElementById("grafico").addEventListener("change", function () {
-        const seleccion = this.value;
+    const cargarGraficoOficinas = () => {
+        fetch("http://localhost:8080/api/reportes/topOficinas", { headers })
+            .then(res => res.json())
+            .then(data => {
+                const oficinas = data.map(item => item.oficina);
+                const entradas = data.map(item => item.entradas);
+                generarGraficoBarras("graficoOficinas", "Entradas por Oficina", oficinas, entradas);
+            })
+            .catch(error => console.error("Error cargando top-oficinas:", error));
+    };
 
-        Object.values(graficos).forEach(graf => graf.style.display = "none");
+    const cargarGraficoActuales = () => {
+        fetch("http://localhost:8080/api/reportes/personasDentro", { headers })
+            .then(res => res.json())
+            .then(data => {
+                const nombres = data.map(item => item.persona);
+                const cantidades = data.map(() => 1);
+                generarGraficoBarras("graficoActuales", "Personas Actualmente Dentro", nombres, cantidades);
+            })
+            .catch(error => console.error("Error cargando personas-dentro:", error));
+    };
 
-        if (seleccion && graficos[seleccion]) {
-            grafContainer.style.display = "block";
-            graficos[seleccion].style.display = "block";
-        } else {
-            grafContainer.style.display = "none";
+    // Mostrar solo el gráfico seleccionado
+    const select = document.getElementById("grafico");
+    select.addEventListener("change", (event) => {
+        const valor = event.target.value;
+
+        // Ocultar todos los gráficos primero
+        document.querySelectorAll(".graf_container canvas").forEach(canvas => {
+            canvas.style.display = "none";
+        });
+
+        // Mostrar y cargar el gráfico correspondiente
+        switch (valor) {
+            case "persona":
+                document.getElementById("graficoPersonas").style.display = "block";
+                cargarGraficoPersonas();
+                break;
+            case "oficinas":
+                document.getElementById("graficoOficinas").style.display = "block";
+                cargarGraficoOficinas();
+                break;
+            case "actuales":
+                document.getElementById("graficoActuales").style.display = "block";
+                cargarGraficoActuales();
+                break;
         }
+
+
     });
+
 });
-//crea el grafico con la persona que ha ingresado mas a una oficina
-function personaMayorIngresos(registros) {
-    const mayorPersona = {};
-    registros.forEach(r => {
-        if (r.tipoRegistro === "entrada") {
-            mayorPersona[r.persona.nombre] = (mayorPersona[r.persona.nombre] || 0) + 1;
-        }
-    });
-    return mayorPersona;
-}
-//Muestra las ofciinas con mayor cantidad de personas dentro
-function ocupacionMaxOficina(registros) {
-    const mayorOficina = {};
-    registros.forEach(r => {
-        if(r.tipoRegistro === "entrada" && r.persona.oficina) {
-            const nombreOficina = r.persona.oficina.nombre;
-            mayorOficina[nombreOficina] = (mayorOficina[nombreOficina] || 0) + 1;
-        }
-    });
-    return mayorOficina;
-}
-//carga la catidad de personas las cuales se encuentran actualmenete en una oficina
-function personasEnOficina(registros) {
-    const personaActual = {};
-    registros.forEach(r => {
-        if (r.tipoRegistro === "entrada") {
-            personaActual[r.persona.nombre] = (personaActual[r.persona.nombre] || 0) + 1;
-        } else if (r.tipoRegistro === "salida") {
-            if(personaActual[r.persona.nombre]) {
-                personaActual[r.persona.nombre]--;
-                if (personaActual[r.persona.nombre] <= 0){
-                    delete personaActual[r.persona.id];
-                }
-            }
-        }
-    });
-    return personaActual;
-}
 
-function generarGraficoPersona(registros) {
-    const datosPersona = personaMayorIngresos(registros);
-    const ctx = document.getElementById("grafPersona").getContext("2d");
 
-    const colores = ["#5452bd", "#fb7fd7", "#edb39e", "#FBF3B9"]
-    const coloresLoop = Object.keys(datosPersona).map((_, i) => colores [i % colores.length]);
-
+///generacion de grafico de barras simple
+function generarGraficoBarras(canvasId, titulo, labels, valores) {
+    const ctx = document.getElementById(canvasId).getContext("2d");
     new Chart(ctx, {
         type: "bar",
         data: {
-            labels: Object.keys(datosPersona),
+            labels: labels,
             datasets: [{
-                label: "Ingreso por persona",
-                data: Object(datosPersona),
-                backgroundColor: coloresLoop,
+                label: titulo,
+                data: valores,
+                backgroundColor: "rgba(75, 192, 192, 0.5)",
+                borderColor: "rgba(75, 192, 192, 1)",
+                borderWidth: 1
             }]
-
         },
         options: {
-            plugins: {},
+            responsive: true,
             scales: {
-                x: {
-                    ticks: {
-                        color: "#dbd5fd"
-                    }
-                },
-
                 y: {
-                    beginAtZero: true,
-                    ticks: {
-                        stepSize: 1,
-                        color: "#dbd5fd"
-                    }
+                    beginAtZero: true
                 }
             }
         }
     });
 }
 
-function generarGraficoOficinas(registros) {
-    const datosOficina = ocupacionMaxOficina(registros);
-    const ctx = document.getElementById("grafOficinas").getContext("2d");
+//bloque ael rol de administrador
+document.addEventListener('DOMContentLoaded', () => {
+    const token = localStorage.getItem("jwtToken");
+    if (!token) {
+        window.location.href = "login.html";
+        return;
+    }
+    const decoded = jwt_decode(token);
 
-    const colores = ["#5452bd", "#fb7fd7", "#edb39e", "#FBF3B9"]
-    const coloresLoop = Object.keys(datosOficina).map((_, i) => colores [i % colores.length]);
+    let userRole;
 
-    new Chart(ctx, {
-        type: "bar",
-        data: {
-            labels: Object.keys(datosOficina),
-            datasets: [{
-                label: "Ingreso por oficina",
-                data: Object.values(datosOficina),
-                backgroundColor: coloresLoop,
-            }]
-
-        },
-        options: {
-            plugins: {},
-            scales: {
-                x: {
-                    ticks: {
-                        color: "#dbd5fd"
-                    }
-                },
-
-                y: {
-                    beginAtZero: true,
-                    ticks: {
-                        stepSize: 1,
-                        color: "#dbd5fd"
-                    }
-                }
-            }
-        }
-    });
-}
-
-function generarGraficoPersonasActuales(registros) {
-    const datosPersona = personasEnOficina(registros);
-    const ctx = document.getElementById("grafPersonasActuales").getContext("2d");
-
-    const colores = ["#5452bd", "#fb7fd7", "#edb39e", "#FBF3B9"]
-    const coloresLoop = Object.keys(datosPersona).map((_, i) => colores [i % colores.length]);
-
-    new Chart(ctx, {
-        type: "pie",
-        data: {
-            labels: Object.keys(datosPersona),
-            datasets: [{
-                label: "Personas dentro de la oficina",
-                data: Object.values(datosPersona),
-                backgroundColor: coloresLoop,
-            }]
-
-        },
-        options: {
-            legend: {
-                labels: {
-                    color: "#dbd5fd"
-                }
-            }
-        }
-    });
-}
+    if (decoded.roles && decoded.roles.length > 0) {
+        userRole = decoded.roles[0]; // Tomamos el primer rol
+    }
+    if (userRole === "ROLE_REGISTRADOR") {
+        alert("No tienes acceso a esta página");
+        window.location.href = "indexRegistro.html";
+    }
+});

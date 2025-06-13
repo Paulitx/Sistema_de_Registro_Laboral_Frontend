@@ -1,109 +1,118 @@
-let paginaActual = 1;
-const registrosPorPagina = 5;
-//muestra las oficinas en el indexOficina
-function cargarOficinas() {
-    let oficinas = JSON.parse(localStorage.getItem("oficinas")) || [];
-    let tbody = document.getElementById("oficinas-list");
-    let totalPaginas = Math.ceil(oficinas.length / registrosPorPagina);
+async function cargarOficinas() {
 
-    tbody.innerHTML = "";
-    if (oficinas.length === 0) {
-        tbody.innerHTML = `<tr>
-            <td colspan="4" class="text-white" style="background-color: #d895c6">No hay datos disponibles.</td>
-        </tr>`;
+    const token = localStorage.getItem("jwtToken");
+
+    if (!token) {
+        alert("No has iniciado sesión. Redirigiendo al login...");
+        window.location.href = "login.html";
+        return;
     }
 
-    let oficinasPagina = oficinas.slice((paginaActual - 1) * registrosPorPagina, paginaActual * registrosPorPagina);
-    oficinasPagina.forEach((oficina, index) => {
+    try {
+        const respuesta = await fetch('http://127.0.0.1:8080/api/oficina', {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            }
+        });
 
-        const indiceReal = (paginaActual - 1) * registrosPorPagina + index;
-        let fila = `<tr>
+        if (!respuesta.ok) throw new Error(`HTTP ${respuesta.status}`);
+
+        const oficinas = await respuesta.json();
+
+        //let personas = JSON.parse(localStorage.getItem("personas")) || [];
+        let tbody = document.getElementById("oficinas-list");
+        tbody.innerHTML = ""; // Limpiar contenido previo
+
+        if (oficinas.length === 0) {
+            tbody.innerHTML = `<tr>
+            <td colspan="6" class="text-center text-muted">No hay oficinas que mostrar</td>
+        </tr>`;
+            return;
+        }
+        oficinas.forEach((oficina, index) => {
+
+            // Calcular el número de personas disponibles
+            let fila = `<tr>
+                    <td>${oficina.id}</td>
                     <td>${oficina.nombre}</td>
                     <td>${oficina.ubicacion}</td>
                     <td>${oficina.limitePersonas}</td>
+                    <td>${oficina.personasActuales}</td>                                          
                     <td>
-                        <button onclick="editarOficina(${indiceReal})" class="btn btn-editar"> 
+                        <button onclick="editarOficina(${oficina.id})" class="btn btn-editar"> 
                             <i class="bi bi-pencil-square"></i> Editar</button>
-                        <button onclick="confirmarEliminacion(${indiceReal})" class="btn btn-eliminar"> 
+                        <button onclick="eliminarOficina(${oficina.id})" class="btn btn-eliminar"> 
                             <i class="bi bi-trash-fill"></i> Eliminar</button>
                     </td>
                 </tr>`;
-        tbody.innerHTML += fila;
-    });
-    mostrarPaginacion(totalPaginas);
+            tbody.innerHTML += fila;
+        });
+    } catch (error) {
+        console.error('Error al cargar oficinas:', error);
+        alert('No se pudieron obtener las oficinas.');
+    }
 }
 
-// Muestra los controles de paginación
-function mostrarPaginacion(totalPaginas) {
-    let paginacionDiv = document.getElementById("paginacion");
-    paginacionDiv.innerHTML = "";
 
-    // Botón "Anterior"
-    if (paginaActual > 1) {
-        let btnAnterior = document.createElement("button");
-        btnAnterior.textContent = "Anterior";
-        btnAnterior.classList.add("btn", "btn-secondary");
-        btnAnterior.onclick = function() {
-            paginaActual--;
-            cargarOficinas();
-        };
-        paginacionDiv.appendChild(btnAnterior);
-    }
 
-    //Muestra numeros de pagina
-    for (let i = 1; i <= totalPaginas; i++) {
-        let btnPagina = document.createElement("button");
-        btnPagina.textContent = i;
-        btnPagina.classList.add("btn", "btn-light", "mx-1");
-        if (i === paginaActual) {
-            btnPagina.disabled = true;
+async function eliminarOficina(id) {
+
+    if(confirm("¿Estás seguro de que deseas eliminar a esta Oficina?")) {
+
+        const token = localStorage.getItem("jwtToken");
+
+        if (!token) {
+            alert("No has iniciado sesión. Redirigiendo al login...");
+            window.location.href = "login.html";
+            return;
         }
-        btnPagina.onclick = function() {
-            paginaActual = i;
-            cargarOficinas();
-        };
-        paginacionDiv.appendChild(btnPagina);
-    }
 
-    //Boton siguiente
-    if (paginaActual < totalPaginas) {
-        let btnSiguiente = document.createElement("button");
-        btnSiguiente.textContent = "Siguiente";
-        btnSiguiente.classList.add("btn", "btn-secondary");
-        btnSiguiente.onclick = function() {
-            paginaActual++;
-            cargarOficinas();
-        };
-        paginacionDiv.appendChild(btnSiguiente);
-    }
-}
-//confirma la eliminaciond de una oficina
-function confirmarEliminacion(index) {
-    if (localStorage.getItem("role") === "visor") {
-        alert(`No tienes permisos para eliminar.`);
-        return;  //Si es visor, no hace nada
-    }
+        try {
+            const respuesta = await fetch(`http://localhost:8080/api/oficina/${id}`, {
+                method: 'DELETE',
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
 
-    const confirmacion = confirm("¿Desea eliminar esta oficina?");
-    if (confirmacion) {
-        eliminarOficina(index);
-        alert("Se ha concretado la eliminacion de la oficina.");
+            if (!respuesta.ok) throw new Error(`HTTP ${respuesta.status}`);
+
+            await cargarOficinas();
+
+        } catch (error) {
+            console.error('Error al eliminar Oficina:', error);
+            alert('No se pudo eliminar la Oficina');
+        }
     }
 }
-//elimina una oficina
-function eliminarOficina(index) {
-    let oficinas = JSON.parse(localStorage.getItem("oficinas")) || [];
-    oficinas.splice(index, 1);
-    localStorage.setItem("oficinas", JSON.stringify(oficinas));
-    cargarOficinas();
-}
-//edita una oficina
-function editarOficina(index) {
-    localStorage.setItem("editIndex", index);
+
+
+function editarOficina(id) {
+    localStorage.setItem("editIndex", id);
     window.location.href = "formOficina.html";
 }
-//guarda una oficina
-function guardarOficina(event) {
+
+async function guardarOficina(event) {
+
+
+
+    const token = localStorage.getItem("jwtToken");
+
+    if (!token) {
+        alert("No has iniciado sesión. Redirigiendo al login...");
+        window.location.href = "login.html";
+        return;
+    }
+    const decoded = jwt_decode(token);
+    const userRole = decoded.role;
+
+    if (userRole === "visor" || userRole === "registardor") {
+        alert("No tienes permisos para agregar personas.");
+        return; // Salir de la función sin hacer la petición
+    }
+
     event.preventDefault();
     let form = event.target;
     if (!form.checkValidity()) {
@@ -114,31 +123,60 @@ function guardarOficina(event) {
 
     let nombre = document.getElementById("nombre").value;
     let ubicacion = document.getElementById("ubicacion").value;
-    let limitePersonas = parseInt(document.getElementById("limitePersonas").value, 10); // Convertir a número
+    let limitePersonas = document.getElementById("limitePersonas").value;
 
-    if (!nombre || !ubicacion || isNaN(limitePersonas) || limitePersonas <= 0) {
-        alert("Todos los campos son obligatorios y el límite de personas debe ser un número válido mayor a 0.");
+
+    if (!nombre ) {
+        alert("Todos los campos son obligatorios");
         return;
     }
 
-    let oficina = { nombre, ubicacion, limitePersonas };
-    let oficinas = JSON.parse(localStorage.getItem("oficinas")) || [];
+    let oficina = {nombre, ubicacion,limitePersonas};
 
-    let index = localStorage.getItem("editIndex");
-    if (index !== null && index !== "null") {
-        oficinas[index] = oficina;  //Editar oficina existente
-        localStorage.removeItem("editIndex");
-        alert("Se ha editado la oficina correctamente");
+
+
+    let id = localStorage.getItem("editIndex");
+    if (id!==null) { //se asgegura de que es un id existente, si no hay pasa al else
+        try {
+            const respuesta = await fetch(`http://127.0.0.1:8080/api/oficina/${id}`, {
+                method: 'PUT',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+
+                },
+                body: JSON.stringify(oficina)
+            });
+
+            if (!respuesta.ok) throw new Error(`HTTP ${respuesta.status}`);
+
+        } catch (error) {
+            console.error('Error al cargar oficinas:', error);
+            alert('No se pudieron obtener las oficinas.');
+        }
+        window.location.href = "indexOficina.html";
     } else {
-        oficinas.push(oficina); //Agregar nueva oficina
-        alert("Se ha guardado la oficina correctamente");
+        try {
+            const respuesta = await fetch('http://127.0.0.1:8080/api/oficina', {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+
+                },
+                body: JSON.stringify(oficina)
+            });
+
+            if (!respuesta.ok) throw new Error(`HTTP ${respuesta.status}`);
+
+        } catch (error) {
+            console.error('Error al cargar oficinas:', error);
+            alert('No se pudieron obtener las oficinas.');
+        }
     }
-    //guarda la oficina en el local storage
-    localStorage.setItem("oficinas", JSON.stringify(oficinas));
+
     window.location.href = "indexOficina.html";
-
 }
-
 // Example starter JavaScript for disabling form submissions if there are invalid fields
 (function () {
     'use strict'
@@ -159,47 +197,66 @@ function guardarOficina(event) {
             }, false)
         })
 })()
-//Funcion para crear el mapa y mostrarlo
-window.onload = function(){
-    let mapa;
-    let mapaCargado = false;
-    let mapaContainer = document.getElementById("mapaContainer");
-    let boton = document.getElementById("btnMostrarMapa");
-    let icono = document.createElement("i");
 
+let mapa;
+let mapaCargado = false;
+
+function inicializarMapa(latInicial = 9.971851666746058, lngInicial = -84.26739519417619) {
+    if (!mapaCargado) {
+        mapa = new google.maps.Map(document.getElementById("googleMap"), {
+            center: { lat: latInicial, lng: lngInicial },
+            zoom: 12
+        });
+
+        mapa.addListener("click", function (event) {
+            let latitud = event.latLng.lat();
+            let longitud = event.latLng.lng();
+            document.getElementById("ubicacion").value = `${latitud}, ${longitud}`;
+        });
+
+        mapaCargado = true;
+    }
+}
+document.addEventListener("DOMContentLoaded", function () {
+    const mapaContainer = document.getElementById("mapaContainer");
+    const boton = document.getElementById("btnMostrarMapa");
+    if (!boton) return;  // Si no existe el botón, salimos para no dar error
+
+    const icono = document.createElement("i");
     icono.className = "bi bi-eye me-2";
     boton.prepend(icono);
 
-    function inicializarMapa(){
-        if(!mapaCargado){ //solo se inicializa una vez
-            mapa = new google.maps.Map(document.getElementById("googleMap"), {
-                center: { lat: 10.01625, lng: -84.21163 }, zoom: 12 //ubicacion inicial alajuela
-            });
-            mapaCargado = true;//verifica si el mapa se cargó
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(function (position) {
+            let lat = position.coords.latitude;
+            let lng = position.coords.longitude;
 
-            mapa.addListener("click", function (event){
-                let latitud = event.latLng.lat();
-                let longitud = event.latLng.lng();
-                //muestra los datos en el espacio "ubicacion"
-                document.getElementById("ubicacion").value = `${latitud}, ${longitud}`;
-            });
-        }
+            document.getElementById("ubicacion").value = `${lat}, ${lng}`;
+
+            inicializarMapa(lat, lng);
+            mapaContainer.style.display = "block";
+            boton.textContent = "Ocultar mapa";
+            icono.className = "bi bi-eye-slash me-2";
+        }, function (error) {
+            console.warn("No se pudo obtener la ubicación, se usará la predeterminada.");
+            inicializarMapa();
+        });
+    } else {
+        console.warn("Geolocalización no soportada.");
+        inicializarMapa();
     }
 
-    //muestra el mapa cuando se toca el boton
     boton.addEventListener("click", function () {
-        if(mapaContainer.style.display === "none" || mapaContainer.style.display === "") {
+        if (mapaContainer.style.display === "none" || mapaContainer.style.display === "") {
             mapaContainer.style.display = "block";
-            inicializarMapa();
             boton.textContent = "Ocultar mapa";
             icono.className = "bi bi-eye-slash me-2";
             boton.prepend(icono);
         } else {
             mapaContainer.style.display = "none";
-            boton.textContent = "Mostrar mapa"
+            boton.textContent = "Mostrar mapa";
             icono.className = "bi bi-eye me-2";
             boton.prepend(icono);
         }
     });
-};
-
+});

@@ -1,44 +1,55 @@
-let paginaActual = 1;
-const registrosPorPagina = 5;
-//Lista las personas con registros
-function cargarRegistros() {
-    let registros = JSON.parse(localStorage.getItem("registros")) || [];
-    let tbody = document.getElementById("registros-list");
-    let totalPaginas = Math.ceil(registros.length / registrosPorPagina);
+async function cargarRegistros() {
+    const token = localStorage.getItem("jwtToken");
 
-    tbody.innerHTML = "";
-    if (registros.length === 0) {
-        tbody.innerHTML = `<tr>
-            <td colspan="4" class="text-white" style="background-color: #d895c6">No hay datos disponibles.</td>
-        </tr>`;
+    if (!token) {
+        alert("No has iniciado sesión. Redirigiendo al login...");
+        window.location.href = "login.html";
         return;
     }
 
-    //determinar los registros a mostrar según la página actual
-    let registrosPagina = registros.slice((paginaActual - 1) * registrosPorPagina, paginaActual * registrosPorPagina);
+    try {
+        const respuesta = await fetch('http://127.0.0.1:8080/api/registro', {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            }
+        });
 
-    // Agregar los registros de la página actual al tbody
-    registrosPagina.forEach((registro, index) => {
-        const indiceReal = (paginaActual - 1) * registrosPorPagina + index;
-        let personaNombre = registro.persona ? registro.persona.nombre : "Desconocido";
-        let fila = `<tr>
+        if (!respuesta.ok) throw new Error(`HTTP ${respuesta.status}`);
+
+        const registros = await respuesta.json();
+        let tbody = document.getElementById("registros-list");
+        tbody.innerHTML = ""; // Limpiar contenido previo
+
+        if (registros.length === 0) {
+            tbody.innerHTML = `<tr>
+                <td colspan="4" class="text-white" style="background-color: #d895c6">No hay datos disponibles.</td>
+            </tr>`;
+            return;
+        }
+
+        registros.forEach((registro, index) => {
+            let personaNombre = (registro.persona && registro.persona.nombre) ? registro.persona.nombre : "Desconocido";
+            let fila = `<tr>
                     <td>${personaNombre}</td>
-                    <td>${registro.tipoRegistro}</td>
+                    <td>${registro.tipo}</td>
                     <td>${registro.fechaHora}</td>
                     <td>
-                        <button onclick="editarRegistro(${indiceReal})" class="btn btn-editar"> 
+                        <button onclick="editarRegistro(${registro.id})" class="btn btn-editar"> 
                             <i class="bi bi-pencil-square"></i> Editar</button>
-                        <button onclick="confirmarEliminacion(${indiceReal})" class="btn btn-eliminar"> 
+                        <button onclick="eliminarRegistro(${registro.id})" class="btn btn-eliminar"> 
                             <i class="bi bi-trash-fill"></i> Eliminar</button>
                     </td>
                 </tr>`;
-        tbody.innerHTML += fila;
-    });
-
-    //Muestra los controles de paginación
-    mostrarPaginacion(totalPaginas);
+            tbody.innerHTML += fila;
+        });
+    } catch (error) {
+        console.error('Error al cargar registros:', error);
+        alert('No se pudieron obtener los registros.');
+    }
 }
-
+/*
 //Muestra los controles de paginación
 function mostrarPaginacion(totalPaginas) {
     let paginacionDiv = document.getElementById("paginacion");
@@ -83,155 +94,125 @@ function mostrarPaginacion(totalPaginas) {
         paginacionDiv.appendChild(btnSiguiente);
     }
 }
-//Confirma la eliminacion del registro
-function confirmarEliminacion(index) {
+*/
 
-    if (localStorage.getItem("role") === "visor") {
-        alert("No tienes permisos para eliminar.");
-        return;  //si es visor, no hace nada
-    }
+async function eliminarRegistro(id) {
 
-    const confirmacion = confirm("¿Desea eliminar este registro?");
-    if (confirmacion) {
-        eliminarRegistro(index);
-        alert("Se ha concretado la eliminacion del registro.");
-    }
-}
-//eñlimina un registro
-function eliminarRegistro(index) {
-    let registros = JSON.parse(localStorage.getItem("registros")) || [];
-    let oficinas = JSON.parse(localStorage.getItem("oficinas")) || [];
-    let personas = JSON.parse(localStorage.getItem("personas")) || [];
+    if(confirm("¿Estás seguro de que deseas eliminar a esta Registro?")) {
 
-    let registro = registros[index];
-    if(!registro){return;}
-    //aumenta la capacidad en el limite de personas si se elimina explicitamente una entrada del registro
-    let persona = personas.find(p => p.id == registro.persona.id);
-    let oficina = oficinas.find(o => o.nombre === persona.oficina.nombre);
-    //valida que si ya una persona se registró con una salida, no aumente al eliminar su entrada
-    if (registro.tipoRegistro === "entrada" && oficina) {
-        let verificarSalida = registros
-            .some(r => r.persona.id == persona.id && r.tipoRegistro === "salida" && r.fechaHora >registro.fechaHora);
-        if (!verificarSalida) {
-            oficina.limitePersonas += 1;
+        const token = localStorage.getItem("jwtToken");
+
+        if (!token) {
+            alert("No has iniciado sesión. Redirigiendo al login...");
+            window.location.href = "login.html";
+            return;
+        }
+
+        try {
+            const respuesta = await fetch(`http://localhost:8080/api/registro/${id}`, {
+                method: 'DELETE',
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+
+            if (!respuesta.ok) throw new Error(`HTTP ${respuesta.status}`);
+
+            await cargarRegistros();
+
+        } catch (error) {
+            console.error('Error al eliminar Registro:', error);
+            alert('No se pudo eliminar la Registro');
         }
     }
-    //reduce la capacidad en el limite de personas si se elimina explicitamente una salida del registro
-    if (registro.tipoRegistro === "salida" && oficina) {
-        let verificarEntrada = registros
-            .some(r => r.persona.id == persona.id && r.tipoRegistro === "entrada" && r.fechaHora < registro.fechaHora);
-
-        if (verificarEntrada) {
-            oficina.limitePersonas -= 1;
-        }
-    }
-
-    //elimina el registro
-    registros.splice(index, 1);
-    localStorage.setItem("registros", JSON.stringify(registros));
-    localStorage.setItem("oficinas", JSON.stringify(oficinas));
-    cargarRegistros();
 }
+
+
 //edita el registro
 function editarRegistro(index) {
     localStorage.setItem("editIndex", index);
     window.location.href = "formRegistro.html";
 }
-//guarda un registro
-function guardarRegistro(event) {
+
+async function guardarRegistro(event) {
     event.preventDefault();
 
-    let oficinas = JSON.parse(localStorage.getItem("oficinas")) || [];
-    let registros = JSON.parse(localStorage.getItem("registros")) || [];
-    let personas = JSON.parse(localStorage.getItem("personas")) || [];
-
-    let tipoRegistro = document.getElementById("tipo").value;
-    let fechaHora = document.getElementById("fechaHora").value;
-    let personaId = document.getElementById("persona").value;
-
-    if (!tipoRegistro || !fechaHora || !personaId) {
-        alert("Todos los campos son obligatorios");
+    const token = localStorage.getItem("jwtToken");
+    if (!token) {
+        alert("No has iniciado sesión. Redirigiendo al login...");
+        window.location.href = "login.html";
         return;
     }
 
+    const form = event.target;
+    if (!form.checkValidity()) {
+        event.stopPropagation();
+        form.classList.add('was-validated');
+        return;
+    }
 
-    let persona = personas.find(p => p.id == personaId);  //busca la persona seleccionada
-    let oficina = oficinas.find(o => o.nombre === persona.oficina.nombre);
+    let tipoRegistro = document.getElementById("tipo").value.trim();
+    let fechaHora = document.getElementById("fechaHora").value.trim();
+    let personaId = parseInt(document.getElementById("persona").value);
+
+    if (!tipoRegistro || !fechaHora || !personaId) {
+        alert("Todos los campos son obligatorios.");
+        return;
+    }
 
     let registro = {
-        persona: { id: persona.id, nombre: persona.nombre, oficina: persona.oficina},
-        tipoRegistro,
-        fechaHora
+        tipo: tipoRegistro,
+        fechaHora: fechaHora,
+        personaId: personaId
     };
 
+    let id = localStorage.getItem("editIndex");
+    let urlBase = 'http://127.0.0.1:8080/api/registro';
 
+    if (id !== null && id !== "null") {
+        // Editar registro existente (PUT)
+        try {
+            const respuesta = await fetch(`${urlBase}/${id}`, {
+                method: 'PUT',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(registro)
+            });
 
-    let index = localStorage.getItem("editIndex");
+            if (!respuesta.ok) throw new Error(`HTTP ${respuesta.status}`);
 
-    let registrosPersona = registros.filter(r => r.persona.id == personaId);
-    let ultimaEntrada = registrosPersona
-        .filter(r=>r.tipoRegistro === "entrada")
-        .sort((a,b) => new Date(b.fechaHora) - new Date(a.fechaHora))[0];
+            alert('Registro actualizado correctamente.');
+            localStorage.removeItem("editIndex");
+            window.location.href = "indexRegistro.html";
 
-    //validacion  para que no se pueda registrar una salida a una hora menor de la hora de entrada, por ejemplo si se entró a las 3pm, no se puede salir a las 2pm del mismo dia
-    if(tipoRegistro === "salida" && ultimaEntrada){
-        let fechaEntrada = new Date(ultimaEntrada.fechaHora);
-        let fechaSalida = new Date(fechaHora);
-        if(fechaSalida < fechaEntrada){
-            alert("La fecha y/u hora de salida no puede ser menor que la ultima hora de entrada");
-            return;
+        } catch (error) {
+            console.error('Error al actualizar registro:', error);
+            alert('Ocurrió un error al actualizar el registro.');
         }
-    }
-
-
-    if (index !== null && index !== "null") {
-        //Aqui se edita el registro
-        let registroAnterior = registros[index];
-        if(registroAnterior.tipoRegistro === "entrada" && tipoRegistro === "salida") {
-            oficina.limitePersonas += 1;
-        }
-        if(registroAnterior.tipoRegistro === "salida" && tipoRegistro === "entrada"){
-            if(oficina.limitePersonas > 0){
-                oficina.limitePersonas -= 1;
-            }else{
-                alert("La oficina ya se encuentra llena.")
-                return;
-            }
-        }
-        registros[index] = registro;  //editar registro existente
-        localStorage.removeItem("editIndex");
-        alert("Se ha editado el registro correctamente");
-
     } else {
-        //Aqui se crea un nuevo registro
+        try {
+            const respuesta = await fetch(urlBase, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(registro)
+            });
 
-        //validacion no se puede salir sin entrar
-        if (tipoRegistro === "salida") {
-            if (!ultimaEntrada) {
-                alert("No se puede registrar una salida sin una entrada previa");
-                return;
-            }
-            oficina.limitePersonas += 1;
-        }
+            if (!respuesta.ok) throw new Error(`HTTP ${respuesta.status}`);
 
-        if(tipoRegistro === "entrada"){
-            if(oficina.limitePersonas > 0){
-                oficina.limitePersonas -= 1;
-            }else{
-                alert("La oficina ya se encuentra llena.")
-                return;
-            }
+            alert('Registro creado correctamente.');
+            window.location.href = "indexRegistro.html";
+
+        } catch (error) {
+            console.error('Error al crear registro:', error);
+            alert('Ocurrió un error al crear el registro.');
         }
-        registros.push(registro);  //Agregar nuevo registro
-        alert("Se ha guardado el registro correctamente");
     }
-//guarda los registros en el localstorage
-    localStorage.setItem("registros", JSON.stringify(registros));
-    localStorage.setItem("oficinas", JSON.stringify((oficinas)));
-    window.location.href = "indexRegistro.html";
-
 }
-
 // Example starter JavaScript for disabling form submissions if there are invalid fields
 (function () {
     'use strict'
@@ -252,27 +233,43 @@ function guardarRegistro(event) {
             }, false)
         })
 })()
-//carga las personas que se encuentran activas en el form
-function cargarPersonas() {
-    let personas = JSON.parse(localStorage.getItem("personas")) || [];
-    let selectPersona = document.getElementById("persona");
+async function cargarPersonasSelect() {
+    const selectPersona = document.getElementById("persona");
+    try {
+        const token = localStorage.getItem("jwtToken");
+        if (!token) {
+            alert("No has iniciado sesión. Redirigiendo al login...");
+            window.location.href = "login.html";
+            return;
+        }
 
-    if (!selectPersona) return;  // Evita errores si el select no existe
+        const response = await fetch("http://127.0.0.1:8080/api/persona/registro", {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
 
-    selectPersona.innerHTML = '<option value="" selected disabled>Seleccione una persona</option>';
-    personas
-        .filter(persona => persona.estado === "activo")
-        .forEach(persona => {
-        let option = document.createElement("option");
-        option.value = persona.id;
-        option.textContent = persona.nombre;
-        selectPersona.appendChild(option);
-    });
+        if (!response.ok) {
+            alert("Error al cargar personas.");
+            return;
+        }
+
+        const personas = await response.json();
+
+        // Limpiar select antes de llenarlo
+        selectPersona.innerHTML = '<option value="" disabled selected>Seleccione una persona</option>';
+
+        personas.forEach(persona => {
+            const option = document.createElement("option");
+            option.value = persona.id;
+            option.textContent = `${persona.nombre}`;
+            selectPersona.appendChild(option);
+        });
+
+    } catch (error) {
+        console.error("Error cargando personas:", error);
+        alert("Ocurrió un error al cargar las personas.");
+    }
 }
-
 //llama a cargarPersonas cuando cargue la página
-document.addEventListener("DOMContentLoaded", cargarPersonas);
-document.addEventListener("DOMContentLoaded", cargarRegistros);
 
 
 //exporta los datos a excel
@@ -296,41 +293,4 @@ function exportarExcel(){
 
     XLSX.writeFile(wb, "registros.xlsx");
 }
-//exporta los datos a pdf
-function exportarPDF(){
-    let registros = JSON.parse(localStorage.getItem("registros")) || [];
-    if(registros.length === 0){
-        alert("No hay datos disponibles para exportar");
-        return;
-    }
-    const { jsPDF } = window.jspdf;
-    const doc = new jsPDF();
 
-    doc.setFontSize(18);
-    doc.text("Lista de registros", 14, 20);
-
-    const headers = ["Persona", "Tipo de Registro", "Fecha y Hora"];
-
-    const data = registros.map(registro => {
-        let personaNombre = registro.persona ? registro.persona.nombre : "Desconocido";
-        return [personaNombre, registro.tipoRegistro, registro.fechaHora];
-    });
-
-    doc.autoTable({
-        startY: 30,
-        head: [headers],
-        body: data,
-        theme: 'striped',
-        styles: {
-            fontSize: 10,
-            cellPadding: 3,
-        },
-        columnStyles: {
-            0: { cellWidth: 40 }, //Persona
-            1: { cellWidth: 40 }, //Tipo registro
-            2: { cellWidth: 40 }, //fecha y hora
-
-        },
-    });
-    doc.save("registros.pdf");
-}

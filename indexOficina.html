@@ -14,10 +14,34 @@
             integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
             crossorigin="anonymous"></script>
 
+    <script src="https://cdn.jsdelivr.net/npm/jwt-decode@3.1.2/build/jwt-decode.min.js"></script>
     <script src ="js/auth.js"></script>
     <script>verificarAutenticacion();</script>
 
     <script src ="js/oficina.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jwt-decode@3.1.2/build/jwt-decode.min.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const token = localStorage.getItem("jwtToken");
+            if (!token) {
+                window.location.href = "login.html";
+                return;
+            }
+            const decoded = jwt_decode(token);
+
+            let userRole;
+
+            if (decoded.roles && decoded.roles.length > 0) {
+                userRole = decoded.roles[0]; // Tomamos el primer rol
+            }
+
+            if(userRole === "ROLE_REGISTRADOR"){
+                alert("No tienes acceso a esta página");
+                window.location.href = "indexRegistro.html";
+            }
+        });
+    </script>
 </head>
 <style>
     table, th, td {
@@ -88,9 +112,11 @@
         <table id="tablita" >
             <thead >
             <tr id="titulos" class="mt-4">
+                <th>Id</th>
                 <th>Nombre</th>
                 <th>Ubicacion</th>
                 <th>Limite de personas</th>
+                <th>Personas Actuales</th>
                 <th></th>
             </tr>
             </thead>

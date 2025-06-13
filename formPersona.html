@@ -14,37 +14,67 @@
           integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
           crossorigin="anonymous"></script>
 
+  <script src="https://cdn.jsdelivr.net/npm/jwt-decode@3.1.2/build/jwt-decode.min.js"></script>
   <script src ="js/auth.js"></script>
   <script>verificarAutenticacion();</script>
 
+  <script>document.addEventListener("DOMContentLoaded", function () {
+    cargarOficinasParaSelect();
+
+  });</script>
   <script src ="js/persona.js"></script>
+<!--  <script>-->
+<!--    document.addEventListener("DOMContentLoaded", () => {-->
+<!--      cargarOficinas();-->
+
+<!--      const index = localStorage.getItem("editIndex");-->
+<!--      if (index !== null) {-->
+<!--        const personas = JSON.parse(localStorage.getItem("personas")) || [];-->
+<!--        const persona = personas[index];-->
+
+<!--        // Llenar campos del formulario-->
+<!--        document.getElementById("id").value = persona.id;-->
+<!--        document.getElementById("nombre").value = persona.nombre;-->
+<!--        document.getElementById("email").value = persona.email;-->
+<!--        document.getElementById("direccion").value = persona.direccion;-->
+<!--        document.getElementById("fechaNacimiento").value = persona.fechaNacimiento;-->
+<!--        document.getElementById("telefono").value = persona.telefono;-->
+<!--        document.getElementById("cargo").value = persona.cargo;-->
+<!--        document.getElementById("estado").value = persona.estado;-->
+
+<!--        // Esperar a que las oficinas estén cargadas para poder seleccionar-->
+<!--        setTimeout(() => {-->
+<!--          const oficinas = JSON.parse(localStorage.getItem("oficinas")) || [];-->
+<!--          const indexOficina = oficinas.findIndex(o => o.nombre === persona.oficina.nombre);-->
+<!--          if (indexOficina !== -1) {-->
+<!--            document.getElementById("oficina").value = indexOficina;-->
+<!--          }-->
+<!--        }, 100);-->
+<!--      }-->
+<!--    });-->
+<!--  </script>-->
+  <script src="https://cdn.jsdelivr.net/npm/jwt-decode@3.1.2/build/jwt-decode.min.js"></script>
   <script>
-    document.addEventListener("DOMContentLoaded", () => {
-      cargarOficinas();
+    document.addEventListener('DOMContentLoaded', () => {
+      const token = localStorage.getItem("jwtToken");
+      if (!token) {
+        window.location.href = "login.html";
+        return;
+      }
+      const decoded = jwt_decode(token);
 
-      const index = localStorage.getItem("editIndex");
-      if (index !== null) {
-        const personas = JSON.parse(localStorage.getItem("personas")) || [];
-        const persona = personas[index];
+      let userRole;
 
-        // Llenar campos del formulario
-        document.getElementById("id").value = persona.id;
-        document.getElementById("nombre").value = persona.nombre;
-        document.getElementById("email").value = persona.email;
-        document.getElementById("direccion").value = persona.direccion;
-        document.getElementById("fechaNacimiento").value = persona.fechaNacimiento;
-        document.getElementById("telefono").value = persona.telefono;
-        document.getElementById("cargo").value = persona.cargo;
-        document.getElementById("estado").value = persona.estado;
+      if (decoded.roles && decoded.roles.length > 0) {
+        userRole = decoded.roles[0]; // Tomamos el primer rol
+      }
 
-        // Esperar a que las oficinas estén cargadas para poder seleccionar
-        setTimeout(() => {
-          const oficinas = JSON.parse(localStorage.getItem("oficinas")) || [];
-          const indexOficina = oficinas.findIndex(o => o.nombre === persona.oficina.nombre);
-          if (indexOficina !== -1) {
-            document.getElementById("oficina").value = indexOficina;
-          }
-        }, 100);
+      if (userRole === "ROLE_VISOR") {
+        alert("No tienes acceso a esta página");
+        window.location.href = "oficinaIndex.html";
+      } else if(userRole === "ROLE_REGISTRADOR"){
+        alert("No tienes acceso a esta página");
+        window.location.href = "indexRegistro.html";
       }
     });
   </script>
@@ -105,8 +135,8 @@
     <div class="row mb-3">
 
       <div class="col-md-6">
-        <label for="id">Id</label>
-        <input id="id" class="form-control" required/>
+        <label for="idUsuario">Id</label>
+        <input id="idUsuario" class="form-control" required/>
         <div class="invalid-feedback">Debe ingresar un id válido.</div>
       </div>
 
@@ -136,8 +166,12 @@
 
       <div class="col-md-6">
         <label for="oficina">Oficina</label>
-        <select id="oficina" class="form-control" required></select>
-        <div class="invalid-feedback">Debe seleccionar una oficina.</div>
+        <select id="oficina" class="form-control" required>
+          <option value="">Seleccione una oficina</option>
+        </select>
+        <div class="invalid-feedback">
+          Debe seleccionar una oficina.
+        </div>
       </div>
 
       <div class="col-md-6">
@@ -155,11 +189,12 @@
       <div class="col-md-6">
         <label for="estado">Estado</label>
         <select id="estado" class="form-control" required>
-          <option value="" selected disabled>Seleccione una un estado</option>
-          <option value="activo">Activo</option>
-          <option value="inactivo">Inactivo</option>
+          <option value="true" selected>Activo</option>
+          <option value="false">Inactivo</option>
         </select>
-        <div class="invalid-feedback">Debe seleccionar un estado.</div>
+        <div class="invalid-feedback">
+          El campo Estado es obligatorio.
+        </div>
       </div>
 
       <div class="col-md-12 text-end mt-4">

@@ -13,18 +13,19 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
             integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
             crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jwt-decode@3.1.2/build/jwt-decode.min.js"></script>
     <script src ="js/auth.js"></script>
-    <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            let index = localStorage.getItem("editIndex");
-            if(index !== null) {
-                let personas = JSON.parse(localStorage.getItem("personas")) || [];
-                let persona = personas[index];
-                document.getElementById("username").value = auth.username;
-                document.getElementById("password").value = auth.password;
-            }
-        });
-    </script>
+<!--    <script>-->
+<!--        document.addEventListener("DOMContentLoaded", function () {-->
+<!--            let index = localStorage.getItem("editIndex");-->
+<!--            if(index !== null) {-->
+<!--                let personas = JSON.parse(localStorage.getItem("personas")) || [];-->
+<!--                let persona = personas[index];-->
+<!--                document.getElementById("username").value = auth.username;-->
+<!--                document.getElementById("password").value = auth.password;-->
+<!--            }-->
+<!--        });-->
+<!--    </script>-->
 </head>
 
 <body>

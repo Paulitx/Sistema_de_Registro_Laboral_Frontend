@@ -1,8 +1,8 @@
-function login(event) {
+async function login(event) {
     event.preventDefault();
 
     let form = event.target;
-    if (!form.checkValidity()) {
+    if(!form.checkValidity()){
         event.stopPropagation();
         form.classList.add('was-validated');
         return;
@@ -11,70 +11,46 @@ function login(event) {
     let username = document.getElementById("username").value;
     let password = document.getElementById("password").value;
 
-    //credenciales con roles
-    const users = {
-        "admin": { password: "1234", role: "admin" },
-        "registrador": { password: "5678", role: "registrador" },
-        "visor": { password: "abcd", role: "visor" }
-    };
+    try {
+        const response = await fetch("http://127.0.0.1:8080/api/auth/login", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ username, password })
+        });
 
-    if (users[username] && users[username].password === password) {
-        localStorage.setItem("auth", "true");
-        localStorage.setItem("role", users[username].role);
-        window.location.href = "principal.html";
-    } else {
-        alert("Usuario o contraseña incorrectos");
-    }
-}
-//cerrado de sesion
-function logout() {
-    localStorage.removeItem("auth");
-    localStorage.removeItem("role");
-    window.location.href = "login.html";
-}
-//Verficia que el usuario sea, visor, administrador o registrador
-function verificarAutenticacion() {
-    let auth = localStorage.getItem("auth");
-    let role = localStorage.getItem("role");
-    if (auth !== "true") {
-        window.location.href = "login.html";
-        return;
-    }
-
-    let pathname = window.location.pathname.split("/").pop();
-    let restrictedForRegistrador = ["formRegistro.html", "indexRegistro.html","principal.html"];//le da acceso al registrador a ciertas paginas
-    let allowedForVisor = ["indexPersona.html", "indexRegistro.html", "indexOficina.html", "reporte.html","principal.html"];//le da acceso al visor a ciertas paginas
-
-    //Avisa al usuario registrador que no tiene permisos
-    if (role === "registrador" && !restrictedForRegistrador.includes(pathname)) {
-        alert(`No tienes acceso a esta página por ser ${role}.`);
-        window.location.href = "principal.html";
-    }
-    //Avisa al usuario visor que no tiene permisos
-    if (role === "visor") {
-        if (!allowedForVisor.includes(pathname)) {
-            alert(`No tienes acceso a esta página por ser ${role}`);
-            window.location.href = "principal.html";
+        if (!response.ok) {
+            throw new Error("Error de autenticación: " + response.statusText);
         }
 
-        //deshabilitar botones de agregar, editar y eliminar para el visor
-        document.addEventListener("DOMContentLoaded", () => {
-            let agregarBtn = document.getElementById("agregar");
-            if (agregarBtn) agregarBtn.style.display = "none";
+        const token = await response.text();
+        localStorage.setItem("jwtToken", token);
 
-            let editarBtns = document.querySelectorAll(".btn-editar");
-            let eliminarBtns = document.querySelectorAll(".btn-eliminar");
 
-            editarBtns.forEach(btn => btn.style.display = "none");
-            eliminarBtns.forEach(btn => btn.style.display = "none");
-        });
-        window.confirmarEliminacion = function(index) {
-            alert(`No tienes permisos para eliminar elementos por ser ${role}.`);
-        };
+        const decoded = jwt_decode(token);
+        console.log(decoded);
+
+        window.location.href = "principal.html";
+    } catch (error) {
+        alert("Las credenciales son incorrrectas");
+        console.error("Error de autenticación:", error);
+        document.getElementById("status").innerText = "Error al iniciar sesión.";
     }
 }
 
-// Example starter JavaScript for disabling form submissions if there are invalid fields
+function logout() {
+    localStorage.removeItem("jwtToken");
+    window.location.href = "login.html";
+}
+
+function verificarAutenticacion() {
+    const token = localStorage.getItem("jwtToken");
+    if (!token) {
+        window.location.href = "login.html";
+    }
+}
+
 (function () {
     'use strict'
 
@@ -94,18 +70,3 @@ function verificarAutenticacion() {
             }, false)
         })
 })()
-//oculta o muestra la contraseña
-function mostrarPassword() {
-    var passwordInput = document.getElementById("password");
-    var eyeIcon = document.getElementById("eyeIcon");
-
-    if (passwordInput.type === "password") {
-        passwordInput.type = "text";
-        eyeIcon.classList.remove("bi-eye-fill");
-        eyeIcon.classList.add("bi-eye-slash-fill");
-    } else {
-        passwordInput.type = "password";
-        eyeIcon.classList.remove("bi-eye-slash-fill");
-        eyeIcon.classList.add("bi-eye-fill");
-    }
-}

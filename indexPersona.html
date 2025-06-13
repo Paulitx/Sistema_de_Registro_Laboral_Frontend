@@ -14,6 +14,7 @@
             integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
             crossorigin="anonymous"></script>
 
+    <script src="https://cdn.jsdelivr.net/npm/jwt-decode@3.1.2/build/jwt-decode.min.js"></script>
     <script src ="js/auth.js"></script>
     <script>verificarAutenticacion();</script>
 
@@ -21,7 +22,27 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.1/xlsx.full.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.23/jspdf.plugin.autotable.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const token = localStorage.getItem("jwtToken");
+            if (!token) {
+                window.location.href = "login.html";
+                return;
+            }
+            const decoded = jwt_decode(token);
 
+            let userRole;
+
+            if (decoded.roles && decoded.roles.length > 0) {
+                userRole = decoded.roles[0]; // Tomamos el primer rol
+            }
+
+            if(userRole === "ROLE_REGISTRADOR"){
+                alert("No tienes acceso a esta página");
+                window.location.href = "indexRegistro.html";
+            }
+        });
+    </script>
 
 </head>
 <style>
@@ -118,6 +139,7 @@
             <thead>
             <tr id="titulos" class="mt-4" >
                 <th>Id</th>
+                <th>Id usuario</th>
                 <th>Nombre</th>
                 <th>Correo</th>
                 <th>Direccion</th>
@@ -146,10 +168,10 @@
 
         <div id="paginacion" class="text-center"></div>
         <script type ="text/javascript">
-            document.addEventListener("DOMContentLoaded", function (){
-                cargarPersonas();
-                localStorage.removeItem("editIndex");
+            document.addEventListener('DOMContentLoaded', function () {
+                cargarPersonas(currentPage); // Cargar la primera página al cargar la página
             });
+
         </script>
     </div>
 </div>

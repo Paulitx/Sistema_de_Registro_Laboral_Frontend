@@ -10,29 +10,43 @@
     <link rel="stylesheet" href="css/formRegistro.css">-
     <link rel="stylesheet" href="css/base.css">
 
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
             integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
             crossorigin="anonymous"></script>
 
+    <script src="https://cdn.jsdelivr.net/npm/jwt-decode@3.1.2/build/jwt-decode.min.js"></script>
     <script src="js/auth.js"></script>
     <script>verificarAutenticacion();</script>
 
     <script src="js/registro.js"></script>
     <script>
         document.addEventListener("DOMContentLoaded", function () {
-            cargarPersonas();
+            cargarPersonasSelect();
 
-            let index = localStorage.getItem("editIndex");
-            if(index !== null) {
-                let registros = JSON.parse(localStorage.getItem("registros")) || [];
-                let registro = registros[index];
+        });
+    </script>
 
-                document.getElementById("persona").value = registro.persona.id;
-                document.getElementById("fechaHora").value = registro.fechaHora;
-                document.getElementById("tipo").value = registro.tipoRegistro;
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const token = localStorage.getItem("jwtToken");
+            if (!token) {
+                window.location.href = "login.html";
+                return;
+            }
+            const decoded = jwt_decode(token);
+
+            let userRole;
+
+            if (decoded.roles && decoded.roles.length > 0) {
+                userRole = decoded.roles[0]; // Tomamos el primer rol
+            }
+
+            if (userRole === "ROLE_VISOR") {
+                alert("No tienes acceso a esta página");
+                window.location.href = "oficinaIndex.html";
             }
         });
-
     </script>
 </head>
 
