@@ -254,15 +254,15 @@ async function cargarPersonasSelect() {
 
         const personas = await response.json();
 
-        // Limpiar select antes de llenarlo
         selectPersona.innerHTML = '<option value="" disabled selected>Seleccione una persona</option>';
-
-        personas.forEach(persona => {
-            const option = document.createElement("option");
-            option.value = persona.id;
-            option.textContent = `${persona.nombre}`;
-            selectPersona.appendChild(option);
-        });
+        personas
+            .filter(persona => persona.estado === true)
+            .forEach(persona => {
+                const option = document.createElement("option");
+                option.value = persona.id;
+                option.textContent = `${persona.nombre}`;
+                selectPersona.appendChild(option);
+            });
 
     } catch (error) {
         console.error("Error cargando personas:", error);

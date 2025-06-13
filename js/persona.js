@@ -1,5 +1,3 @@
-let currentPage = 0; // Página inicial
-const pageSize = 5; // Tamaño de página
 
 async function cargarPersonas(page = 0, size = 5) {
     const token = localStorage.getItem("jwtToken");
@@ -23,9 +21,8 @@ async function cargarPersonas(page = 0, size = 5) {
 
         const data = await respuesta.json();
 
-        // Actualizar la tabla con los datos de personas
         const tbody = document.getElementById("personas-list");
-        tbody.innerHTML = ""; // Limpiar contenido previo
+        tbody.innerHTML = "";
 
         if (data.content.length === 0) {
             tbody.innerHTML = `<tr>
@@ -57,7 +54,6 @@ async function cargarPersonas(page = 0, size = 5) {
             });
         }
 
-        // Actualizar los botones de paginación
         actualizarBotones(data.number, data.totalPages);
 
     } catch (error) {
@@ -69,29 +65,29 @@ async function cargarPersonas(page = 0, size = 5) {
 
 function actualizarBotones(page, totalPages) {
     const paginacion = document.getElementById("paginacion");
-    paginacion.innerHTML = ""; // Limpia los botones previos
+    paginacion.innerHTML = "";
 
-    // Botón de Anterior
+//boton "anterior" de la pagina
     const btnAnterior = document.createElement("button");
     btnAnterior.textContent = "Anterior";
     btnAnterior.className = "btn btn-primary mx-1";
-    btnAnterior.disabled = page === 0; // Deshabilitar si estamos en la primera página
-    btnAnterior.onclick = () => cargarPersonas(page - 1, 5); // Cambiar a la página anterior
+    btnAnterior.disabled = page === 0;
+    btnAnterior.onclick = () => cargarPersonas(page - 1, 5); ////va a la pagina anterior
     paginacion.appendChild(btnAnterior);
 
-    // Botón de Siguiente
+    //pagina actual
+    const infoPagina = document.createElement("span");
+    infoPagina.textContent = `Pagina ${page + 1} de ${totalPages}`;
+    infoPagina.className = "mx-2 align-self-center";
+    paginacion.appendChild(infoPagina);
+
+//boton "siguiente" de la pagina
     const btnSiguiente = document.createElement("button");
     btnSiguiente.textContent = "Siguiente";
     btnSiguiente.className = "btn btn-primary mx-1";
-    btnSiguiente.disabled = page === totalPages - 1; // Deshabilitar si estamos en la última página
-    btnSiguiente.onclick = () => cargarPersonas(page + 1, 5); // Cambiar a la página siguiente
+    btnSiguiente.disabled = page === totalPages - 1;
+    btnSiguiente.onclick = () => cargarPersonas(page + 1, 5); //va a la siguiente pagiona
     paginacion.appendChild(btnSiguiente);
-
-    // Opcional: Mostrar número de página actual
-    const infoPagina = document.createElement("span");
-    infoPagina.textContent = `Página ${page + 1} de ${totalPages}`;
-    infoPagina.className = "mx-2 align-self-center";
-    paginacion.appendChild(infoPagina);
 }
 
 
@@ -163,15 +159,14 @@ async function guardarPersona(event) {
         alert("Todos los campos son obligatorios");
         return;
     }
-
-    // Crear objeto persona con oficina referenciada por id
+    //persona objeto, aqui se le asigna la oficina tambien
     let persona = {idUsuario, nombre, email, direccion, fechaNacimiento, telefono, cargo, estado, oficina: parseInt(oficinaId)
     };
 
     let id = localStorage.getItem("editIndex");
 
     if (id !== null) {
-        // Modo edición
+        //modiificar
         try {
             const respuesta = await fetch(`http://127.0.0.1:8080/api/persona/${id}`, {
                 method: 'PUT',
@@ -192,7 +187,7 @@ async function guardarPersona(event) {
             alert('No se pudo guardar la persona.');
         }
     } else {
-        // Modo creación
+        ///agregar
         try {
             const respuesta = await fetch('http://127.0.0.1:8080/api/persona', {
                 method: 'POST',
@@ -213,88 +208,157 @@ async function guardarPersona(event) {
         }
     }
 }
-async function cargarOficinasParaSelect(idOficinaSeleccionada = null) {
+async function buscarPersonasFiltrado() {
     const token = localStorage.getItem("jwtToken");
-    try {
-        const respuesta = await fetch('http://127.0.0.1:8080/api/oficina', {
-            headers: { 'Authorization': `Bearer ${token}` }
-        });
+    if (!token) {
+        alert("No has iniciado sesión. Redirigiendo al login...");
+        window.location.href = "login.html";
+        return;
+    }
 
-        if (!respuesta.ok) throw new Error(`HTTP ${respuesta.status}`);
+    const atributo = document.getElementById("atributoBusqueda").value;
+    const valor = document.getElementById("busqueda").value.trim();
 
-        const oficinas = await respuesta.json();
+    if (!atributo) {
+        alert("Por favor selecciona un atributo para buscar.");
+        return;
+    }
 
-        const select = document.getElementById("oficina");
-        select.innerHTML = '<option value="">Selecciona una oficina</option>';
+    if (!valor) {
+        await cargarPersonas(); // Si el valor está vacío, carga todos los datos
+        return;
+    }
 
-        oficinas.forEach(oficina => {
-            const option = document.createElement("option");
-            option.value = oficina.id;
-            option.textContent = oficina.nombre;
-            if (idOficinaSeleccionada && oficina.id === idOficinaSeleccionada) {
-                option.selected = true;
+    let urlBase = "http://127.0.0.1:8080/api/persona";
+    let url = "";
+
+    switch (atributo) {
+        case "id":
+            url = `${urlBase}/id/${valor}`;
+            break;
+        case "nombre":
+        case "email":
+        case "direccion":
+        case "telefono":
+        case "cargo":
+            url = `${urlBase}/${atributo}?${atributo}=${encodeURIComponent(valor)}`;
+            break;
+        case "fechaNacimiento":
+            url = `${urlBase}/fechaNacimiento?fechaNacimiento=${encodeURIComponent(valor)}`;
+            break;
+        case "oficina":
+            url = `${urlBase}/oficina?idOficina=${encodeURIComponent(valor)}`;
+            break;
+        case "estado":
+            let estadoValor = null;
+            if (valor.toLowerCase() === "activo") estadoValor = true;
+            else if (valor.toLowerCase() === "inactivo") estadoValor = false;
+            else if (valor.toLowerCase() === "true" || valor.toLowerCase() === "false") {
+                estadoValor = (valor.toLowerCase() === "true");
+            } else {
+                alert("Para estado escribe 'Activo', 'Inactivo', 'true' o 'false'.");
+                return;
             }
-            select.appendChild(option);
+            url = `${urlBase}/estado?estado=${estadoValor}`;
+            break;
+        default:
+            alert("Atributo no reconocido para búsqueda.");
+            return;
+    }
+
+    try {
+        const respuesta = await fetch(url, {
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            }
         });
+
+        const tbody = document.getElementById("personas-list");
+        tbody.innerHTML = "";
+
+        if (!respuesta.ok) {
+            // Para búsqueda por ID, si no se encuentra, mostrar mensaje amigable
+            if (atributo === "id" && respuesta.status === 404) {
+                tbody.innerHTML = `<tr><td colspan="11" class="text-center text-muted">No se encontraron personas con esos criterios.</td></tr>`;
+                return;
+            }
+
+            alert(`Error en la búsqueda: HTTP ${respuesta.status}`);
+            return;
+        }
+
+        const data = await respuesta.json();
+
+        if (atributo === "id") {
+            if (!data || !data.id) {
+                tbody.innerHTML = `<tr><td colspan="11" class="text-center text-muted">No se encontraron personas con esos criterios.</td></tr>`;
+                return;
+            }
+
+            const persona = data;
+            tbody.innerHTML = `<tr>
+                <td>${persona.id}</td>
+                <td>${persona.idUsuario}</td>
+                <td>${persona.nombre}</td>
+                <td>${persona.email}</td>
+                <td>${persona.direccion}</td>
+                <td>${persona.fechaNacimiento}</td>
+                <td>${persona.oficina?.nombre || ''}</td>
+                <td>${persona.telefono}</td>
+                <td>${persona.cargo}</td>
+                <td>${persona.estado ? "Activo" : "Inactivo"}</td>
+                <td>
+                    <button onclick="editarPersona(${persona.id})" class="btn btn-warning">
+                        <i class="bi bi-pencil"></i> Editar
+                    </button>
+                    <button onclick="eliminarPersona(${persona.id})" class="btn btn-danger">
+                        <i class="bi bi-trash"></i> Eliminar
+                    </button>
+                </td>
+            </tr>`;
+            return;
+        }
+
+        const personas = data.content || data;
+
+        if (!Array.isArray(personas) || personas.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="11" class="text-center text-muted">No se encontraron personas con esos criterios.</td></tr>`;
+            return;
+        }
+
+        personas.forEach(persona => {
+            let fila = `<tr>
+                <td>${persona.id}</td>
+                <td>${persona.idUsuario}</td>
+                <td>${persona.nombre}</td>
+                <td>${persona.email}</td>
+                <td>${persona.direccion}</td>
+                <td>${persona.fechaNacimiento}</td>
+                <td>${persona.oficina?.nombre || ''}</td>
+                <td>${persona.telefono}</td>
+                <td>${persona.cargo}</td>
+                <td>${persona.estado ? "Activo" : "Inactivo"}</td>
+                <td>
+                    <button onclick="editarPersona(${persona.id})" class="btn btn-warning">
+                        <i class="bi bi-pencil"></i> Editar
+                    </button>
+                    <button onclick="eliminarPersona(${persona.id})" class="btn btn-danger">
+                        <i class="bi bi-trash"></i> Eliminar
+                    </button>
+                </td>
+            </tr>`;
+            tbody.innerHTML += fila;
+        });
+
     } catch (error) {
-        console.error('Error al cargar oficinas:', error);
-        alert('No se pudieron cargar las oficinas.');
+        console.error("Error buscando personas:", error);
+        alert("Error al realizar la búsqueda.");
     }
 }
 
-// Función para descargar el archivo Excel
-async function exportarExcel() {
-    const token = localStorage.getItem("jwtToken");
-    fetch('http://localhost:8080/api/persona/exportar/excel', {
-        method: 'GET',
-        headers: {
-            'Authorization': `Bearer ${token}`
-        }
-    })
-        .then(response => {
-            if (response.ok) {
-                return response.blob(); // Convertir la respuesta en un Blob
-            } else {
-                throw new Error('No se pudo exportar el archivo Excel.');
-            }
-        })
-        .then(blob => {
-            const url = window.URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = 'personas.xlsx'; // Nombre del archivo descargado
-            document.body.appendChild(a);
-            a.click();
-            a.remove();
-        })
-        .catch(error => console.error('Error al exportar Excel:', error));
-}
-
-// Función para descargar el archivo PDF
-async function exportarPDF() {
-    const token = localStorage.getItem("jwtToken");
-    fetch('http://localhost:8080/api/persona/exportar/pdf', {
-        method: 'GET',
-        headers: {
-            'Authorization': `Bearer ${token}`
-        }
-    })
-        .then(response => {
-            if (response.ok) {
-                return response.blob(); // Convertir la respuesta en un Blob
-            } else {
-                throw new Error('No se pudo exportar el archivo PDF.');
-            }
-        })
-        .then(blob => {
-            const url = window.URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = 'personas.pdf'; // Nombre del archivo descargado
-            document.body.appendChild(a);
-            a.click();
-            a.remove();
-        })
-        .catch(error => console.error('Error al exportar PDF:', error));
-}
-
+document.addEventListener("DOMContentLoaded", () => {
+    document.getElementById("busqueda").addEventListener("input", () => {
+        buscarPersonasFiltrado();
+    });
+});
