@@ -1,5 +1,6 @@
 
 async function cargarPersonas(page = 0, size = 5) {
+
     const token = localStorage.getItem("jwtToken");
 
     if (!token) {
@@ -53,7 +54,6 @@ async function cargarPersonas(page = 0, size = 5) {
                 tbody.innerHTML += fila;
             });
         }
-
         actualizarBotones(data.number, data.totalPages);
 
     } catch (error) {
@@ -203,7 +203,7 @@ async function guardarPersona(event) {
             window.location.href = "indexPersona.html";
 
         } catch (error) {
-            console.error('Error al guardar persona (creación):', error);
+            console.error('Error al guardar persona:', error);
             alert('No se pudo guardar la persona.');
         }
     }
