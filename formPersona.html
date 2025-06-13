@@ -22,6 +22,7 @@
     cargarOficinasParaSelect();
 
   });</script>
+
   <script src ="js/persona.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/jwt-decode@3.1.2/build/jwt-decode.min.js"></script>
   <script>
@@ -47,6 +48,39 @@
         window.location.href = "indexRegistro.html";
       }
     });
+  </script>
+  <script>
+    document.addEventListener("DOMContentLoaded", async function () {
+      const token = localStorage.getItem("jwtToken");
+      const id = localStorage.getItem("editIndex");
+
+      if (id) {
+        try {
+          const res = await fetch(`http://127.0.0.1:8080/api/persona/id/${id}`, {
+            headers: { 'Authorization': `Bearer ${token}` }
+          });
+          if (!res.ok) throw new Error('No se pudo obtener la persona');
+          const persona = await res.json();
+
+          document.getElementById("idUsuario").value = persona.idUsuario;
+          document.getElementById("nombre").value = persona.nombre;
+          document.getElementById("email").value = persona.email;
+          document.getElementById("direccion").value = persona.direccion;
+          document.getElementById("fechaNacimiento").value = persona.fechaNacimiento;
+          document.getElementById("telefono").value = persona.telefono;
+          document.getElementById("cargo").value = persona.cargo;
+          document.getElementById("estado").value = persona.estado;
+
+          await cargarOficinasParaSelect(persona.oficina.id);
+        } catch (error) {
+          console.error("Error cargando datos de edición:", error);
+          alert("No se pudieron cargar los datos de la persona.");
+        }
+      } else {
+        await cargarOficinasParaSelect();
+      }
+    });
+
   </script>
 </head>
 

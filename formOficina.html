@@ -46,6 +46,29 @@
             }
         });
     </script>
+    <script>
+        document.addEventListener("DOMContentLoaded", async function () {
+            const token = localStorage.getItem("jwtToken");
+            const id = localStorage.getItem("editIndex");
+
+            if (id) {
+                try {
+                    const res = await fetch(`http://127.0.0.1:8080/api/oficina/id/${id}`, {
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    });
+                    if (!res.ok) throw new Error('No se pudo obtener la oficina');
+                    const oficina = await res.json();
+
+                    document.getElementById("nombre").value = oficina.nombre || '';
+                    document.getElementById("ubicacion").value = oficina.ubicacion || '';
+                    document.getElementById("limitePersonas").value = oficina.limitePersonas || '';
+                } catch (error) {
+                    console.error("Error cargando datos de la oficina:", error);
+                    alert("No se pudieron cargar los datos de la oficina.");
+                }
+            }
+        });
+    </script>
 </head>
 <body>
 <nav class="navbar navbar-expand-lg navbar-custom">

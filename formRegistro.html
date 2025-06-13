@@ -39,12 +39,44 @@
             let userRole;
 
             if (decoded.roles && decoded.roles.length > 0) {
-                userRole = decoded.roles[0]; // Tomamos el primer rol
+                userRole = decoded.roles[0];
             }
 
             if (userRole === "ROLE_VISOR") {
                 alert("No tienes acceso a esta página");
                 window.location.href = "oficinaIndex.html";
+            }
+        });
+    </script>
+    <script>
+        document.addEventListener("DOMContentLoaded", async function () {
+            const token = localStorage.getItem("jwtToken");
+            const id = localStorage.getItem("editIndex");
+
+            if (id) {
+                try {
+                    const res = await fetch(`http://127.0.0.1:8080/api/registro/id/${id}`, {
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    });
+                    if (!res.ok) throw new Error('No se pudo obtener el registro');
+                    const registro = await res.json();
+
+                    document.getElementById("tipo").value = registro.tipo || "";
+                    document.getElementById("fechaHora").value = registro.fechaHora || "";
+
+                    await cargarPersonasSelect();
+
+                    const selectPersona = document.getElementById("persona");
+                    if (selectPersona && registro.persona) {
+                        selectPersona.value = registro.persona.id;
+                    }
+
+                } catch (error) {
+                    console.error("Error cargando datos del registro:", error);
+                    alert("No se pudieron cargar los datos del registro.");
+                }
+            } else {
+                await cargarPersonasSelect();
             }
         });
     </script>
