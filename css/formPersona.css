@@ -1,4 +1,4 @@
-input#id, input#nombre, input#email, input#direccion, input#fechaNacimiento, input#telefono, select#oficina,
+input#idUsuario, input#nombre, input#email, input#direccion, input#fechaNacimiento, input#telefono, select#oficina,
 input#cargo, select#estado {
     background-color: var(--moraoOscurin);
     color: var(--moraoClaro);

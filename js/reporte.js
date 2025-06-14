@@ -95,6 +95,18 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 });
 
+const colores = ["#5452bd", "#fb7fd7", "#edb39e", "#FBF3B9"];
+
+/**
+ * Asigna colores a un conjunto de datos según la cantidad de elementos.
+ * Si hay más elementos que colores, los recicla.
+ * @param {number} cantidad - Número de elementos para los que se asignarán colores.
+ * @returns {string[]} - Array de colores asignados.
+ */
+function obtenerColores(cantidad) {
+    return Array.from({ length: cantidad }, (_, i) => colores[i % colores.length]);
+}
+
 /**
  * Genera un gráfico de barras utilizando Chart.js.
  * @param {string} canvasId - ID del elemento canvas donde se renderizará el gráfico.
@@ -104,6 +116,10 @@ document.addEventListener("DOMContentLoaded", () => {
  */
 function generarGraficoBarras(canvasId, titulo, labels, valores) {
     const ctx = document.getElementById(canvasId).getContext("2d");
+
+    // Obtiene los colores dinámicamente según la cantidad de valores
+    const coloresAsignados = obtenerColores(valores.length);
+
     new Chart(ctx, {
         type: "bar",
         data: {
@@ -111,8 +127,8 @@ function generarGraficoBarras(canvasId, titulo, labels, valores) {
             datasets: [{
                 label: titulo,
                 data: valores,
-                backgroundColor: "rgba(75, 192, 192, 0.5)",
-                borderColor: "rgba(75, 192, 192, 1)",
+                backgroundColor: coloresAsignados,
+                borderColor: coloresAsignados.map(color => color.replace(/0.5\)$/, "1)")), // Opcional: Asegura borde con opacidad total
                 borderWidth: 1
             }]
         },

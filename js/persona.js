@@ -79,10 +79,10 @@ async function cargarPersonas(page = 0, size = 5) {
                     <td>${persona.cargo}</td>
                     <td>${persona.estado ? "Activo" : "Inactivo"}</td>
                     <td>
-                        <button onclick="editarOficina(${persona.id})" class="btn btn-editar"> 
+                        <button onclick="editarPersona(${persona.id})" class="btn btn-editar"> 
                             <i class="bi bi-pencil-square"></i> Editar
                         </button>
-                        <button onclick="eliminarOficina(${persona.id})" class="btn btn-eliminar"> 
+                        <button onclick="eliminarPersona(${persona.id})" class="btn btn-eliminar"> 
                             <i class="bi bi-trash-fill"></i> Eliminar
                         </button>
                     </td>
@@ -533,6 +533,7 @@ async function buscarPersonasFiltrado() {
         case "id":
             url = `${urlBase}/id/${valor}`;
             break;
+        case "idUsuario":
         case "nombre":
         case "email":
         case "direccion":
@@ -604,10 +605,10 @@ async function buscarPersonasFiltrado() {
                 <td>${persona.cargo}</td>
                 <td>${persona.estado ? "Activo" : "Inactivo"}</td>
                 <td>
-                    <button onclick="editarOficina(${persona.id})" class="btn btn-editar"> 
+                    <button onclick="editarPersona(${persona.id})" class="btn btn-editar"> 
                        <i class="bi bi-pencil-square"></i> Editar
                     </button>
-                    <button onclick="eliminarOficina(${persona.id})" class="btn btn-eliminar"> 
+                    <button onclick="eliminarPersona(${persona.id})" class="btn btn-eliminar"> 
                         <i class="bi bi-trash-fill"></i> Eliminar
                     </button>
                 </td>
@@ -635,10 +636,10 @@ async function buscarPersonasFiltrado() {
                 <td>${persona.cargo}</td>
                 <td>${persona.estado ? "Activo" : "Inactivo"}</td>
                 <td>
-                    <button onclick="editarOficina(${persona.id})" class="btn btn-editar"> 
+                    <button onclick="editarPersona(${persona.id})" class="btn btn-editar"> 
                        <i class="bi bi-pencil-square"></i> Editar
                     </button>
-                    <button onclick="eliminarOficina(${persona.id})" class="btn btn-eliminar"> 
+                    <button onclick="eliminarPersona(${persona.id})" class="btn btn-eliminar"> 
                         <i class="bi bi-trash-fill"></i> Eliminar
                     </button>
                 </td>
