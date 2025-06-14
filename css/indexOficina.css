@@ -10,16 +10,33 @@
     box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
 }
 
-#oficinas-list .btn-editar:hover    {
+#oficinas-list .btn-editar:hover, #oficinas-list .btn-eliminar:hover, button#excel:hover, button#pdf:hover {
     background-color: var(--moraoOscuro1);
     border: 1px solid var(--moraoOscuro1);
     color: var(--moraoClaro);
 }
 
-#oficinas-list .btn-eliminar:hover {
+#atributoBusqueda, #busqueda {
+    background-color: var(--moraoOscurin);
+    color: var(--moraoClaro);
+    border: none;
+}
+
+#atributoBusqueda {
+    width: 30%;
+}
+
+#busqueda {
+    width: 220%;
+}
+
+#busqueda::placeholder {
+    color: var(--moraoClaro);
+}
+
+#atributoBusqueda:hover, #busqueda:hover {
     background-color: var(--moraoOscuro1);
     border: 1px solid var(--moraoOscuro1);
-    color: var(--moraoClaro);
 }
 
 #tablita {
@@ -43,6 +60,16 @@
 button#agregar {
     background: none;
     color: var(--moraoClaro1);
+}
+
+button#excel {
+    background: var(--verde);
+    color: var(--moraoOscurin);
+}
+
+button#pdf {
+    background: var(--rojo);
+    color: var(--moraoOscurin);
 }
 
 button#agregar:hover {
@@ -69,15 +96,10 @@ button#agregar:hover {
     border: none;
 }
 
-#paginacion .btn-secondary {
+#paginacion .btn-secondary, #paginacion button:hover  {
     background-color: var(--moraoOscuro1) !important;
     color: var(--moraoClaro) !important;
     border: none;
-}
-
-#paginacion button:hover {
-    background-color: var(--moraoOscuro1) !important;
-    color: var(--moraoClaro) !important;
 }
 
 #paginacion button[disabled] {

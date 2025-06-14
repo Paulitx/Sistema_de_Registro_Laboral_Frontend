@@ -295,6 +295,104 @@ async function guardarOficina(event) {
 }
 
 /**
+ * Exporta un archivo PDF con información de las personas desde el servidor.
+ *
+ * @async
+ * @function exportarPDF
+ * @returns {Promise<void>} - No retorna valores directamente; genera una descarga del archivo PDF.
+ * @throws {Error} - Si ocurre un error durante la solicitud o al procesar la respuesta.
+ */
+async function exportarPDF() {
+    /**
+     * @constant {string|null} token - Token JWT almacenado en el localStorage para autenticar la solicitud.
+     */
+    const token = localStorage.getItem("jwtToken");
+
+    fetch('http://localhost:8080/api/oficina/exportar/pdf', {
+        method: 'GET',
+        headers: {
+            'Authorization': `Bearer ${token}`
+        }
+    })
+        .then(response => {
+            if (response.ok) {
+                /**
+                 * Convierte la respuesta en un Blob si la solicitud fue exitosa.
+                 * @returns {Blob} - Representación del archivo PDF como Blob.
+                 */
+                return response.blob();
+            } else {
+                throw new Error('No se pudo exportar el archivo PDF.');
+            }
+        })
+        .then(blob => {
+            /**
+             * Genera una URL de objeto a partir del Blob y desencadena la descarga del archivo.
+             */
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'oficinas.pdf'; // Nombre del archivo descargado
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+        })
+        .catch(error => {
+            console.error('Error al exportar PDF:', error);
+        });
+}
+
+
+/**
+ * Exporta un archivo Excel con información de las personas desde el servidor.
+ *
+ * @async
+ * @function exportarExcel
+ * @returns {Promise<void>} - No retorna valores directamente; genera una descarga del archivo Excel.
+ * @throws {Error} - Si ocurre un error durante la solicitud o al procesar la respuesta.
+ */
+async function exportarExcel() {
+    /**
+     * @constant {string|null} token - Token JWT almacenado en el localStorage para autenticar la solicitud.
+     */
+    const token = localStorage.getItem("jwtToken");
+
+    fetch('http://localhost:8080/api/oficina/exportar/excel', {
+        method: 'GET',
+        headers: {
+            'Authorization': `Bearer ${token}`
+        }
+    })
+        .then(response => {
+            if (response.ok) {
+                /**
+                 * Convierte la respuesta en un Blob si la solicitud fue exitosa.
+                 * @returns {Blob} - Representación del archivo Excel como Blob.
+                 */
+                return response.blob();
+            } else {
+                throw new Error('No se pudo exportar el archivo Excel.');
+            }
+        })
+        .then(blob => {
+            /**
+             * Genera una URL de objeto a partir del Blob y desencadena la descarga del archivo.
+             */
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'oficinas.xlsx'; // Nombre del archivo descargado
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+        })
+        .catch(error => {
+            console.error('Error al exportar Excel:', error);
+        });
+}
+
+
+/**
  * Inicializa validaciones personalizadas de Bootstrap para formularios.
  *
  * @function
@@ -569,11 +667,11 @@ async function buscarOficinasFiltrado() {
                 <td>${oficina.limitePersonas}</td>
                 <td>${oficina.personasActuales}</td>
                 <td>
-                    <button onclick="editarOficina(${oficina.id})" class="btn btn-warning">
-                        <i class="bi bi-pencil"></i> Editar
+                    <button onclick="editarOficina(${oficina.id})" class="btn btn-editar"> 
+                      <i class="bi bi-pencil-square"></i> Editar
                     </button>
-                    <button onclick="eliminarOficina(${oficina.id})" class="btn btn-danger">
-                        <i class="bi bi-trash"></i> Eliminar
+                    <button onclick="eliminarOficina(${oficina.id})" class="btn btn-eliminar"> 
+                       <i class="bi bi-trash-fill"></i> Eliminar
                     </button>
                 </td>
             </tr>`;
@@ -595,11 +693,11 @@ async function buscarOficinasFiltrado() {
                 <td>${oficina.limitePersonas}</td>
                 <td>${oficina.personasActuales}</td>
                 <td>
-                    <button onclick="editarOficina(${oficina.id})" class="btn btn-warning">
-                        <i class="bi bi-pencil"></i> Editar
+                    <button onclick="editarOficina(${oficina.id})" class="btn btn-editar"> 
+                       <i class="bi bi-pencil-square"></i> Editar
                     </button>
-                    <button onclick="eliminarOficina(${oficina.id})" class="btn btn-danger">
-                        <i class="bi bi-trash"></i> Eliminar
+                    <button onclick="eliminarOficina(${oficina.id})" class="btn btn-eliminar"> 
+                       <i class="bi bi-trash-fill"></i> Eliminar
                     </button>
                 </td>
             </tr>`;

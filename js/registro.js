@@ -45,7 +45,7 @@ async function cargarRegistros(page = 0, size = 5) {
 
         if (registros.content.length === 0) {
             tbody.innerHTML = `<tr>
-                <td colspan="5" class="text-white" style="background-color: #d895c6">No hay oficinas que mostrar.</td>
+                <td colspan="5" class="text-center text-muted">No hay oficinas que mostrar.</td>
             </tr>`;
         } else {
             registros.content.forEach(registro => {
@@ -527,13 +527,11 @@ async function buscarRegistrosFiltrado(page = 0, size = 5) {
                 <td>${registro.tipo}</td>
                 <td>${registro.fechaHora}</td>
                 <td>
-                    <button onclick="editarRegistro(${registro.id})" class="btn btn-warning">
-                        <i class="bi bi-pencil"></i> Editar
-                    </button>
-                    <button onclick="eliminarRegistro(${registro.id})" class="btn btn-danger">
-                        <i class="bi bi-trash"></i> Eliminar
-                    </button>
-                </td>
+                  <button onclick="editarRegistro(${registro.id})" class="btn btn-editar"> 
+                      <i class="bi bi-pencil-square"></i> Editar</button>
+                  <button onclick="eliminarRegistro(${registro.id})" class="btn btn-eliminar"> 
+                      <i class="bi bi-trash-fill"></i> Eliminar</button>
+                  </td>
             </tr>`;
             return;
         }
@@ -554,12 +552,10 @@ async function buscarRegistrosFiltrado(page = 0, size = 5) {
                 <td>${registro.tipo}</td>
                 <td>${registro.fechaHora}</td>
                 <td>
-                    <button onclick="editarRegistro(${registro.id})" class="btn btn-warning">
-                        <i class="bi bi-pencil"></i> Editar
-                    </button>
-                    <button onclick="eliminarRegistro(${registro.id})" class="btn btn-danger">
-                        <i class="bi bi-trash"></i> Eliminar
-                    </button>
+                   <button onclick="editarRegistro(${registro.id})" class="btn btn-editar"> 
+                        <i class="bi bi-pencil-square"></i> Editar</button>
+                    <button onclick="eliminarRegistro(${registro.id})" class="btn btn-eliminar"> 
+                        <i class="bi bi-trash-fill"></i> Eliminar</button>
                 </td>
             </tr>`;
             tbody.innerHTML += fila;

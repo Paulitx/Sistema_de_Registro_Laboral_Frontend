@@ -16,6 +16,29 @@
     color: var(--moraoClaro);
 }
 
+#atributoBusqueda, #busqueda {
+    background-color: var(--moraoOscurin);
+    color: var(--moraoClaro);
+    border: none;
+}
+
+#atributoBusqueda {
+    width: 30%;
+}
+
+#busqueda {
+    width: 220%;
+}
+
+#busqueda::placeholder {
+    color: var(--moraoClaro);
+}
+
+#atributoBusqueda:hover, #busqueda:hover {
+    background-color: var(--moraoOscuro1);
+    border: 1px solid var(--moraoOscuro1);
+}
+
 #tablita {
     width: 100%;
     border-collapse: collapse;
