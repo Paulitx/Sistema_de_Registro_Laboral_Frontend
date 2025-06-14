@@ -18,6 +18,29 @@
     <script>verificarAutenticacion();</script>
 
     <script defer src="js/reporte.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/jwt-decode@3.1.2/build/jwt-decode.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const token = localStorage.getItem("jwtToken");
+            if (!token) {
+                window.location.href = "login.html";
+                return;
+            }
+            const decoded = jwt_decode(token);
+
+            let userRole;
+
+            if (decoded.roles && decoded.roles.length > 0) {
+                userRole = decoded.roles[0]; // Tomamos el primer rol
+            }
+
+            if(userRole === "ROLE_REGISTRADOR"){
+                alert("No tienes acceso a esta página por ser registrador");
+                window.location.href = "indexRegistro.html";
+            }
+        });
+    </script>
 </head>
 <body>
 <nav class="navbar navbar-expand-lg navbar-custom">
