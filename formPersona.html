@@ -16,15 +16,8 @@
 
   <script src="https://cdn.jsdelivr.net/npm/jwt-decode@3.1.2/build/jwt-decode.min.js"></script>
   <script src ="js/auth.js"></script>
+
   <script>verificarAutenticacion();</script>
-
-  <script>document.addEventListener("DOMContentLoaded", function () {
-    cargarOficinasParaSelect();
-
-  });</script>
-
-  <script src ="js/persona.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/jwt-decode@3.1.2/build/jwt-decode.min.js"></script>
   <script>
     document.addEventListener('DOMContentLoaded', () => {
       const token = localStorage.getItem("jwtToken");
@@ -41,14 +34,21 @@
       }
 
       if (userRole === "ROLE_VISOR") {
-        alert("No tienes acceso a esta página");
-        window.location.href = "indexOficina.html";
+        alert("No tienes acceso a esta página por ser visor");
+        window.location.href = "indexPersona.html";
       } else if(userRole === "ROLE_REGISTRADOR"){
-        alert("No tienes acceso a esta página");
+        alert("No tienes acceso a esta página por ser registrador");
         window.location.href = "indexRegistro.html";
       }
     });
   </script>
+  <script>document.addEventListener("DOMContentLoaded", function () {
+    cargarOficinasParaSelect();
+
+  });</script>
+
+  <script src ="js/persona.js"></script>
+
   <script>
     document.addEventListener("DOMContentLoaded", async function () {
       const token = localStorage.getItem("jwtToken");
